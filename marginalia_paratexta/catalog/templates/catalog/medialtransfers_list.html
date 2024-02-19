@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Transmediality List</h1>
+  {% if transmediality_list %}
+    <ul>
+      {% for transmediality in transmediality_list %}
+      <li>
+        <p>{{ transmediality.hypertext }}</p>
+        <p>{{ transmediality.Transmedialidad }}</p>
+        <p>{{ transmediality.product_owner }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no transmedialitys in the library.</p>
+  {% endif %}
+{% endblock %}

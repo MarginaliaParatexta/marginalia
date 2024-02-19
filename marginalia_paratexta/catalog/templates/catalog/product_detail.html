@@ -1,0 +1,691 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ product.title }}</h1>
+
+<!-- Nodos y fichas relacionadas-->
+{% if product.related_products.all or product.related_to.all %}
+  <h5>Fichas relacionadas</h5>
+  <ul>
+    {% for ficha in product.related_products.all %}
+      <li>
+        <a href="{% url 'creation-detail' pk=ficha.id %}">{{ficha.title}}</a>
+      </li>
+    {% endfor %}
+    {% for ficha in product.related_to.all %}
+    <li>
+      <a href="{% url 'creation-detail' pk=ficha.id %}">{{ficha.title}}</a>
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+{% if product.related_knots.all %}
+  <h5>Nodos</h5>
+    {% for nodo in product.related_knots.all %}
+      <strong>{{ nodo.info }}</strong>
+      <ul>
+        {% for producto in nodo.productos.all %}
+          {% if product.id != producto.id %}
+            <li>
+              <a href="{% url 'creation-detail' pk=producto.id %}">{{producto.title}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endfor %}
+{% endif %}
+<!-- DETALLES DE LA CREACION CONJUNTOS TERMINADO-->
+<div>
+  <h2>Detalles de la creación</h2>
+  <p><strong>Formato:</strong> {{ type }}</p>
+  <p><strong>Título original: </strong>{{ product.creation.original_title }}</p>
+  {% if  product.creation.subtitles %}
+    <p><strong>Subtítulos, capítulos y entregas: </strong>{{ product.creation.subtitles }}</p>
+  {% endif %}
+  {% if  product.creation.authorship %}
+    <p><strong>Autoría: </strong>{{ product.creation.authorship }}</p>
+  {% endif %}
+  {% if product.creation.end_year %}
+    <p><strong>Fechas: </strong>({{ product.creation.publication_year }} - {{ product.creation.end_year }})</p>
+  {% else %}
+    <p><strong>Año de publicación: </strong>{{ product.creation.publication_year }}</p>
+  {% endif %}
+  {% if  product.creation.synopsis %}
+    <p><strong>Sinopsis: </strong>{{ product.creation.synopsis|urlizetrunc:8|linebreaks }}</p>
+  {% endif %}
+  {% if product.creation.creation_award.all %}
+    <h5>Premios:</h5>
+    <ul>
+      {% for award in product.creation.creation_award.all %}
+        <li>
+          <p>{{ award.institution_name }}, {{award.text}}, [{{ award.year }}]</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if product.creation.creation_other_language.all %}
+    <h5>Título en otros idiomas:</h5>
+    <ul>
+      {% for title in product.creation.creation_other_language.all %}
+        <li>
+          <p>{{ title.idioma }}, {{title.title}}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <!-- DETALLES DE LA MEDIACREATION TERMINADO-->
+  {% if type == "Película" or type == "Videojuego" or type == "Serie de television" %}
+    {% if  product.creation.idioma_original %}
+      <p><strong>Idioma original: </strong>{{ product.creation.idioma_original }}</p>
+    {% endif %}
+    {% if  product.creation.IMDb %}
+      <p><strong>ImdDB: </strong><a href="{{ product.creation.IMDb }}" target="_blank">Enlace</a></p>
+    {% endif %}
+    {% if  product.creation.commertial_editions %}
+      <p><strong>Ediciones comerciales: </strong>{{ product.creation.commertial_editions }}</p>
+    {% endif %}
+
+    <!-- DETALLES DE VIDEOGAME TERMINADO-->
+    {% if type == "Videojuego" %}
+      {% if  product.creation.batch_number %}
+        <p><strong>Número de entregas: </strong>{{ product.creation.batch_number }}</p>
+      {% endif %}
+      {% if  product.creation.development %}
+        <p><strong>Desarrollo: </strong>{{ product.creation.development }}</p>
+      {% endif %}
+      {% if  product.creation.distribution %}
+        <p><strong>Distribución: </strong>{{ product.creation.distribution }}</p>
+      {% endif %}
+      {% if  product.creation.design %}
+        <p><strong>Diseño: </strong>{{ product.creation.design }}</p>
+      {% endif %}
+      {% if  product.creation.plataforms %}
+        <p><strong>Plataformas: </strong>{{ product.creation.plataforms }}</p>
+      {% endif %}
+      {% if  product.creation.official_website %}
+        <a href="{{ product.creation.official_website }}" target="_blank">Página oficial</a>
+      {% endif %}
+    {% endif %}
+
+        <!-- DETALLES DE TVSERIE TERMINADO-->
+        {% if type == "Serie de television" %}
+          {% if  product.creation.debut %}
+            <p><strong>Año de debut: </strong>{{ product.creation.debut }}</p>
+          {% endif %}
+          {% if  product.creation.number_seasons %}
+            <p><strong>Número de temporadas: </strong>{{ product.creation.number_seasons }}</p>
+          {% endif %}
+          {% if  product.creation.number_chapters %}
+            <p><strong>Número de capítulos: </strong>{{ product.creation.number_chapters }}</p>
+          {% endif %}
+          {% if  product.creation.remastering %}
+            <p><strong>Reedición: </strong>{{ product.creation.remastering }}</p>
+          {% endif %}
+          {% if  product.creation.direction %}
+            <p><strong>Dirección: </strong>{{ product.creation.direction }}</p>
+          {% endif %}
+          {% if  product.creation.producer %}
+            <p><strong>Productora: </strong>{{ product.creation.producer }}</p>
+          {% endif %}
+          {% if  product.creation.original_idea %}
+            <p><strong>Idea original: </strong>{{ product.creation.original_idea }}</p>
+          {% endif %}
+          {% if  product.creation.cast %}
+            <p><strong>Reparto: </strong>{{ product.creation.cast }}</p>
+          {% endif %}
+          {% if  product.creation.music %}
+            <p><strong>Música: </strong>{{ product.creation.music }}</p>
+          {% endif %}
+          {% if  product.creation.costume %}
+            <p><strong>Vestuario: </strong>{{ product.creation.costume }}</p>
+          {% endif %}
+          {% if  product.creation.sound %}
+            <p><strong>Sonido: </strong>{{ product.creation.sound }}</p>
+          {% endif %}
+          {% if  product.creation.other_data %}
+            <p><strong>Otros datos: </strong>{{ product.creation.other_data }}</p>
+          {% endif %}
+          {% if  product.creation.remake %}
+            <p><strong>Info remake: </strong>{{ product.creation.remake }}</p>
+          {% endif %}
+          {% if  product.creation.remake_link %}
+            <a href="{% url 'creation-detail' pk=product.creation.remake_link.id %}">Enlace a Remake</a>
+          {% endif %}
+        {% endif %}
+
+        <!-- DETALLES DE MOVIE TERMINADO-->
+        {% if type == "Película" %}
+          {% if  product.creation.script %}
+            <p><strong>Guión: </strong>{{ product.creation.script }}</p>
+          {% endif %}
+          {% if  product.creation.remastering %}
+            <p><strong>Reedición: </strong>{{ product.creation.remastering }}</p>
+          {% endif %}
+          {% if  product.creation.direction %}
+            <p><strong>Dirección: </strong>{{ product.creation.direction }}</p>
+          {% endif %}
+          {% if  product.creation.producer %}
+            <p><strong>Productora: </strong>{{ product.creation.producer }}</p>
+          {% endif %}
+          {% if  product.creation.earnings %}
+            <p><strong>Taquilla: </strong>{{ product.creation.earnings }}</p>
+          {% endif %}
+          {% if  product.creation.cast %}
+            <p><strong>Reparto: </strong>{{ product.creation.cast }}</p>
+          {% endif %}
+          {% if  product.creation.music %}
+            <p><strong>Música: </strong>{{ product.creation.music }}</p>
+          {% endif %}
+          {% if  product.creation.costume %}
+            <p><strong>Vestuario: </strong>{{ product.creation.costume }}</p>
+          {% endif %}
+          {% if  product.creation.sound %}
+            <p><strong>Sonido: </strong>{{ product.creation.sound }}</p>
+          {% endif %}
+          {% if  product.creation.other_data %}
+            <p><strong>Otros datos: </strong>{{ product.creation.other_data }}</p>
+          {% endif %}
+          {% if  product.creation.remake %}
+            <p><strong>Info remake: </strong>{{ product.creation.remake }}</p>
+          {% endif %}
+          {% if  product.creation.remake_link %}
+            <a href="{% url 'creation-detail' pk=product.creation.remake_link.id %}">Enlace a Remake</a>
+          {% endif %}
+        {% endif %}
+
+    {% if product.creation.mediacreation_other_countries_debut.all %}
+      <h5>Estreno en otros países:</h5>
+      <ul>
+        {% for debut in product.creation.mediacreation_other_countries_debut.all %}
+          <li>
+            <p>{{ debut.pais }}, {{debut.description}}, [{{ debut.year }}]</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+
+  <!-- DETALLES DE TEATRO -->
+  {% if type == "Teatro" %}
+    {% if  product.creation.idioma_original %}
+      <p><strong>Idioma original: </strong>{{ product.creation.idioma_original }}</p>
+    {% endif %}
+    {% if  product.creation.estreno %}
+      <p><strong>Estreno: </strong>{{ product.creation.estreno.location }} [{{ product.creation.estreno.date }}]</p>
+    {% endif %}    
+    {% if  product.creation.stage_direction %}
+      <p><strong>Dirección escénica: </strong>{{ product.creation.stage_direction }}</p>
+    {% endif %}
+    {% if  product.creation.producer %}
+      <p><strong>Productora: </strong>{{ product.creation.producer }}</p>
+    {% endif %}
+    {% if  product.creation.cast %}
+      <p><strong>Reparto: </strong>{{ product.creation.cast }}</p>
+    {% endif %}
+    {% if  product.creation.music %}
+      <p><strong>Música: </strong>{{ product.creation.music }}</p>
+    {% endif %}
+    {% if  product.creation.lighting %}
+      <p><strong>Iluminación: </strong>{{ product.creation.lighting }}</p>
+    {% endif %}
+    {% if  product.creation.sound %}
+      <p><strong>Sonido: </strong>{{ product.creation.sound }}</p>
+    {% endif %}
+    {% if  product.creation.other_data %}
+      <p><strong>Otros datos: </strong>{{ product.creation.other_data }}</p>
+    {% endif %}
+    {% if  product.creation.dramatic_text %}
+      <p><strong>Texto dramático: </strong>{{ product.creation.dramatic_text }}</p>
+    {% endif %}
+    {% if  product.creation.repositions %}
+      <p><strong>Reposiciones: </strong>{{ product.creation.repositions|urlizetrunc:8|linebreaks }}</p>
+    {% endif %}
+    {% if  product.creation.links %}
+      <p><strong>Links: </strong>{{ product.creation.links|urlizetrunc:8|linebreaks }}</p>
+    {% endif %}
+    {% if  product.creation.remake %}
+      <p><strong>Info remake: </strong>{{ product.creation.remake }}</p>
+    {% endif %}
+    {% if  product.creation.remake_link %}
+      <a href="{% url 'creation-detail' pk=product.creation.remake_link.id %}">Enlace a Remake</a>
+    {% endif %}
+
+    {% if product.creation.theatre_images.all %}
+      <h5>Imagenes de la obra</h5>
+      <ul>
+        {% for theater_image in product.creation.theatre_images.all %}
+          <li>
+            <img src="{{ theater_image.image }}" alt="Imagen de la obra" style="max-width: 300px;">
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if product.creation.theatre_staging.all %}
+      <h5>Puestas en escena</h5>
+      <ul>
+        {% for stage in product.creation.theatre_staging.all %}
+          <li>
+            {% if  stage.artistic_direction %}
+              <p><strong>Dirección artística: </strong>{{ stage.artistic_direction }}</p>
+            {% endif %}
+            {% if  stage.producer %}
+              <p><strong>Producción: </strong>{{ stage.producer }}</p>
+            {% endif %}    
+            {% if  stage.cast %}
+              <p><strong>Reparto: </strong>{{ stage.cast }}</p>
+            {% endif %}
+            {% if  stage.location %}
+              <p><strong>Lugar: </strong>{{ stage.location }}</p>
+            {% endif %}     
+            {% if  stage.date %}
+              <p><strong>Fecha: </strong>{{ stage.date }}</p>
+            {% endif %}   
+            {% if  stage.link %}
+               <a href="{{ stage.videoclip }}" target="_blank">Enlace</a>
+            {% endif %}        
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+
+  <!-- DETALLES DE LA LIBRARYCREATION TERMINADO-->
+  {% if type == "Novela" or type == "Comic" or type == "Juego de mesa" %}
+    {% if  product.creation.original_edition %}
+      <p><strong>Edición original: </strong>{{ product.creation.original_edition.isbn }} [{{product.creation.original_edition.year}}], {{product.creation.original_edition.editorial}}</p>
+    {% endif %}
+    {% if product.creation.library_creation_other_language_edition.all %}
+      <h5>Ediciones en otros idiomas</h5>
+      <ul>
+        {% for edition in product.creation.library_creation_other_language_edition.all %}
+          <li>
+            <p>{{ edition.location }} [{{ edition.year }}], traducido al {{edition.idioma}}, por {{edition.traductor}} ({{edition.editorial}}), con isbn: {{edition.isbn}}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if product.creation.library_creation_reissue.all %}
+    <h5>Reediciones</h5>
+    <ul>
+      {% for edition in product.creation.library_creation_reissue.all %}
+        <li>
+          <p>{{ edition.location }} [{{ edition.year }}], traducido por {{edition.traductor}} ({{edition.editorial}}), con isbn: {{edition.isbn}}</p>
+        </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- DETALLES DE LA NOVELA TERMINADO-->
+    {% if type == "Novela" %}
+      {% if  product.creation.authorship %}
+        <p><strong>Autoría: </strong>{{ product.creation.authorship }}</p>
+      {% endif %}
+    {% endif %}
+
+    <!-- DETALLES DE BOARDGAME TERMINADO--> 
+    {% if type == "Juego de mesa" %}
+      <p><strong>Número de jugadores: </strong>{{ product.creation.number_players }}</p>
+      <p><strong>Edad: </strong>{{ product.creation.age }}</p>
+      {% if  product.creation.author %}
+        <p><strong>Autoría: </strong>{{ product.creation.author }}</p>
+      {% endif %}
+      {% if  product.creation.ilustrator %}
+        <p><strong>Ilustrador: </strong>{{ product.creation.ilustrator }}</p>
+      {% endif %}
+      {% if  product.creation.developer %}
+        <p><strong>Desarrollador: </strong>{{ product.creation.developer }}</p>
+      {% endif %}
+      {% if  product.creation.design %}
+        <p><strong>Diseño: </strong>{{ product.creation.design }}</p>
+      {% endif %}
+    {% endif %}
+
+    <!-- DETALLES DE COMIC TERMINADO-->
+    {% if type == "Comic" %}
+      {% if  product.creation.script %}
+        <p><strong>Guión: </strong>{{ product.creation.script }}</p>
+      {% endif %}
+      {% if  product.creation.design %}
+        <p><strong>Diseño: </strong>{{ product.creation.design }}</p>
+      {% endif %}
+      {% if product.creation.colecciones.all %}
+        <h5>Colecciones</h5>
+        <ul>
+          {% for coleccion in product.creation.colecciones.all %}
+            <li>
+              <p>{{ coleccion.collection_name|default:"" }}, {{ coleccion.year }} ({{coleccion.editorial}})</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endif %}    
+  {% endif %}
+
+  <!-- DETALLES DE MUSIC TERMINADO-->
+  {% if type == "Música" %}
+    {% if  product.creation.idioma_original %}
+      <p><strong>Idioma Original: </strong>{{ product.creation.idioma_original }}</p>
+    {% endif %}
+    {% if  product.creation.artist %}
+      <p><strong>Artista: </strong>{{ product.creation.artist }}</p>
+    {% endif %}
+    {% if  product.creation.album %}
+      <p><strong>Álbum: </strong>{{ product.creation.album }}</p>
+    {% endif %}
+    {% if  product.creation.discography %}
+      <p><strong>Discográfica: </strong>{{ product.creation.discography }}</p>
+    {% endif %}
+    {% if  product.creation.composer %}
+      <p><strong>Compositor: </strong>{{ product.creation.composer }}</p>
+    {% endif %}
+    {% if  product.creation.lyricist %}
+      <p><strong>Letrista: </strong>{{ product.creation.lyricist }}</p>
+    {% endif %}
+    {% if  product.creation.mixing %}
+      <p><strong>Mezcla: </strong>{{ product.creation.mixing }}</p>
+    {% endif %}
+    {% if  product.creation.remastering %}
+      <p><strong>Remasterización: </strong>{{ product.creation.remastering }}</p>
+    {% endif %}
+    {% if  product.creation.cover_design %}
+      <p><strong>Diseño de carátula: </strong>{{ product.creation.cover_design }}</p>
+    {% endif %}
+  {% endif %}
+
+  {% if product.creation.genero.all %}
+    <h5>Géneros</h5>
+    <ul>
+      {% for genero in product.creation.genero.all %}
+        <li>
+          <p>{{genero }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% if product.creation.paises.all %}
+    <h5>Países relacionados:</h5>
+    <ul>
+      {% for country in product.creation.paises.all %}
+        <li>{{ country.name }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if product.creation.palabras_clave.all %}
+    <h5>Palabras clave:</h5>
+    <ul>
+      {% for keyword in product.creation.palabras_clave.all %}
+      <li>{{ keyword.name }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+
+
+<!-- HIPOTEXTO TERMINADO-->
+{% if product.product_hipotext %}
+<h2>Hipotexto</h2>
+  {% if product.product_hipotext.hipotext_classic_sources.all %}
+    <div>
+      <h4>Fuentes Clásicas</h4>
+      <ul>
+        {% for classic_source in product.product_hipotext.hipotext_classic_sources.all %}
+          <li><p>{{ classic_source.name|default:"" }}, {{ classic_source.title|default:"" }} [{{ classic_source.reference|default:""}}], {% if classic_source.others %}Otros: {{ classic_source.others }}  {% endif %}</p></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {% if product.product_hipotext.hipotext_other_sources.all %}
+    <div>
+      <h4>Otras Fuentes</h4>
+      <ul>
+        {% for other_source in product.product_hipotext.hipotext_other_sources.all %}
+          <li><p>{{ other_source.name|default:"" }} {{ other_source.title|default:"" }} {{ other_source.reference|default:"" }}</p></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {% if product.product_hipotext.hipotext_documentary_sources.all %}
+    <div>
+      <h4>Fuentes Documentales</h4>
+      <ul>
+        {% for documentary_source in product.product_hipotext.hipotext_documentary_sources.all %}
+          <li><p>{{ documentary_source.name|default:"" }} {{ documentary_source.title|default:"" }} {{documentary_source.reference|default:"" }}</p></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+{% endif %}
+
+
+<!-- PARATEXTO TERMINADO-->
+  {% if user_belongs_to_group or user.is_staff %}
+    {% if product.product_paratext %}
+      <div>
+        <h2>Paratextos</h2>
+        {% if product.product_paratext.introduction and product.product_paratext.introduction != '--' %}
+          <strong>Introducción</strong>
+          <p>{{ product.product_paratext.introduction }}</p>
+        {% endif %}
+        {% if product.product_paratext.prologue and product.product_paratext.introduction != '--' %}
+          <strong>Prólogo</strong>
+          <p>{{ product.product_paratext.prologue }}</p>
+        {% endif %}
+        {% if product.product_paratext.epilogue and product.product_paratext.introduction != '--' %}
+          <strong>Epílogo</strong>
+          <p>{{ product.product_paratext.epilogue }}</p>
+        {% endif %}
+        {% if product.product_paratext.notes and product.product_paratext.introduction != '--' %}
+          <strong>Notas, citas, scholia varia, ...</strong>
+          <p>{{ product.product_paratext.notes }}</p>
+        {% endif %}
+
+        {% if product.product_paratext.paratext_cover.all %}
+          <div>
+            <strong>Cartel portada, contraportada y carátula</strong>
+          </div>
+          {% for cover in product.product_paratext.paratext_cover.all %}
+            <ul>
+              {% if cover.image %}
+                <img src="{{ cover.image }}" alt="{{ cover.description}} " style="max-width: 300px;">
+              {% endif %}
+              <p>{{ cover.description|default:"" }}</p>
+            </ul>
+          {% endfor %}
+        {% endif %}
+      
+        {% if product.product_paratext.paratext_adstrailer.all %}
+          <div>
+            <strong>Anuncios y tráileres</strong>
+          </div>
+          {% for adstrailer in product.product_paratext.paratext_adstrailer.all %}
+            <ul>
+              {% if adstrailer.image %}
+                <img src="{{ adstrailer.image }}" alt="{{ adstrailer.description}} " style="max-width: 300px;">
+              {% endif %}
+              <p>{{ adstrailer.description|default:"" }}</p>
+              {% if adstrailer.videoclip %}
+                <a href="{{ adstrailer.videoclip }}" target="_blank">Enlace al tráiler</a>
+              {% endif %}
+            </ul>
+          {% endfor %}
+        {% endif %}
+
+        {% if product.product_paratext.paratext_extras.all %}
+          <div>
+            <strong>Extras</strong>
+          </div>
+          {% for extra in product.product_paratext.paratext_extras.all %}
+            <ul>
+              {% if extra.image %}
+                <img src="{{ extra.image }}" alt="{{ extra.description}} " style="max-width: 300px;">
+              {% endif %}
+              <p>{{ extra.description|default:"" }}</p>
+              {% if extra.videoclip %}
+                <a href="{{ extra.videoclip }}" target="_blank">Enlace al extra</a>
+              {% endif %}
+            </ul>
+          {% endfor %}
+        {% endif %}
+
+        {% if product.product_paratext.paratext_rulebook.all %}
+          <div>
+            <strong>Libros de reglas</strong>
+          </div>
+          {% for rulebook in product.product_paratext.paratext_rulebook.all %}
+            <ul>
+              {% if rulebook.image %}
+                <img src="{{ rulebook.image }}" alt="{{ rulebook.description}} " style="max-width: 300px;">
+              {% endif %}
+              <p>{{ rulebook.description|default:"" }}</p>
+            </ul>
+          {% endfor %}
+        {% endif %}
+        {% if product.product_paratext.paratext_videoclip.all %}
+          <div>
+            <strong>Videoclips y actuaciones directo</strong>
+          </div> 
+          {% for videoclip in product.product_paratext.paratext_videoclip.all %}
+            <ul>
+              {% if videoclip.image %}
+                <img src="{{ videoclip.image }}" alt="{{ videoclip.description}} " style="max-width: 300px;">
+              {% endif %}
+              <p>{{ videoclip.description|default:"" }}</p>
+              {% if videoclip.videoclip %}
+                <a href="{{ videoclip.videoclip }}" target="_blank">Enlace al videoclip</a>
+              {% endif %}
+            </ul>
+          {% endfor %}
+      {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <!-- METATEXTOS TERMNINADO -->
+  {% if product.product_metatext %}
+    <div>
+      <h2>Metatextos</h2>
+
+      {% if product.product_metatext.metatext_declarations.all %}
+        <div>
+          <strong>Declaraciones autorizadas</strong>
+        </div>
+        {% for declaration in product.product_metatext.metatext_declarations.all %}
+          <ul>
+            <p>{{ declaration.description|default:"" }}</p>
+            {% if declaration.link %}
+              <a href="{{ declaration.link }}" target="_blank">Enlace a la declaración</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+
+      {% if product.product_metatext.metatext_criticism.all %}
+        <div>
+          <strong>Críticas</strong>
+        </div>
+        {% for criticism in product.product_metatext.metatext_criticism.all %}
+          <ul>
+            <p>{{ criticism.description|default:"" }}</p>
+            {% if criticism.link %}
+              <a href="{{ criticism.link }}" target="_blank">Enlace a la crítica</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+
+      {% if product.product_metatext.metatext_press_article.all %}
+        <div>
+          <strong>Artículos de prensa</strong>
+        </div>
+        {% for press_article in product.product_metatext.metatext_press_article.all %}
+          <ul>
+            <p>{{ press_article.description|default:"" }}</p>
+            {% if press_article.link %}
+              <a href="{{ press_article.link }}" target="_blank">Enlace al artículo</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+
+      {% if product.product_metatext.metatext_social_networks.all %}
+        <div>
+          <strong>Social Networks</strong>
+        </div>
+        {% for social_network in product.product_metatext.metatext_social_networks.all %}
+          <ul>
+            <p>{{ social_network.description|default:"" }}</p>
+            {% if social_network.link %}
+              <a href="{{ social_network.link }}" target="_blank">Enlace</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+
+      {% if product.product_metatext.metatext_blogs.all %}
+        <div>
+          <strong>Blogs</strong>
+        </div>
+        {% for blog in product.product_metatext.metatext_blogs.all %}
+          <ul>
+            <p>{{ blog.description|default:"" }}</p>
+            {% if blog.link %}
+              <a href="{{ blog.link }}" target="_blank">Enlace</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+
+      {% if product.product_metatext.metatext_fandoms.all %}
+        <div>
+          <strong>Fandoms</strong>
+        </div>
+        {% for fandom in product.product_metatext.metatext_fandoms.all %}
+          <ul>
+            <p>{{ fandom.type|default:"" }}: {{ fandom.name|default:"" }}</p>
+            {% if fandom.link %}
+              <a href="{{ fandom.link }}" target="_blank">Enlace</a>
+            {% endif %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+    </div>
+  {% endif %}
+
+
+ 
+  <!-- TRASVASES MEDIALES TERMINADO-->
+  {% if  product.product_medialTransfer %}
+    <div>
+      <h2>Trasvases mediales</h2>
+      {% if product.product_medialTransfer.hypertext %}
+        <p>Hipertexto: {{ product.product_medialTransfer.hypertext|default:"" }}</p>
+      {% endif %}
+      {% if product.product_medialTransfer.Transmedialidad %}
+        <p>Transmediality: <a href="{% url 'creation-detail' pk=product.product_medialTransfer.Transmedialidad.id %}">{{ product.product_medialTransfer.Transmedialidad.title }}</a></p>
+      {% endif %}
+      
+    </div>
+  {% endif %}
+  <!-- BIBLIOGRAFIA TERMINADO-->
+  
+  {% if product.product_bibliography %}
+  <div>
+    <h2>Bibliografía:</h2>
+    {% if  product.product_bibliography.studies_tradition_classical_reception %}
+      <strong>Estudios de Tradición y Recepción Clásica</strong>
+      <p>{{product.product_bibliography.studies_tradition_classical_reception|urlizetrunc:8|linebreaks }}</p>
+    {% endif %}
+    {% if  product.product_bibliography.other_studies %}
+    <strong>Otros estudios</strong>  
+     <p>{{ product.product_bibliography.other_studies|urlizetrunc:8|linebreaks }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ADICIONAL-->
+  <p>Autor: {{ product.build_id }}, Última modificación:  {{ product.last_modified }}</p>
+
+{% endblock %}

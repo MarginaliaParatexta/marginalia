@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ knot.info }}</h1>
+    <ul>
+        {% for producto in knot.productos.all %}
+            <li>
+                <a href="{% url 'creation-detail' pk=producto.id %}">{{ producto.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+  
+{% endblock %}

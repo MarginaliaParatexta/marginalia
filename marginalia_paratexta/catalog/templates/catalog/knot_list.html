@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Nodos</h1>
+  {% if knot_list %}
+    <ul>
+      {% for knot in knot_list %}
+      <li>
+        <a href="{% url 'knot-detail' pk=knot.id %}">{{ knot.info }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no knots in Marginalia.</p>
+  {% endif %}
+{% endblock %}

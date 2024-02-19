@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <form method="get" action="{% url 'creations' %}">
+    {{ filter.form.as_p }}
+    
+    <button type="submit">Filter</button>
+    <a href="?">Resetear filtros</a>
+  </form>
+  <h4>Productos que cumplen todas las condiciones:</h4>
+  <ul>
+    {% for product in all_conditions %}
+      <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
+    {% empty %}
+      <li>No se encontraron productos que cumplan todas las condiciones.</li>
+    {% endfor %}
+  </ul>
+  
+  <!-- Mostrar productos que cumplen al menos una de las condiciones -->
+  {% if any_condition %}
+    <h4>Productos que cumplen al menos una de las condiciones de género y palabra clave:</h4>
+    <ul>
+      {% for product in any_condition %}
+        <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  
+{% endblock %}

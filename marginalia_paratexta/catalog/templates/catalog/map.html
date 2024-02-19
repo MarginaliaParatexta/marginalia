@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Div para el mapa -->
+    <div id="world_map"></div>
+
+    <script>
+        // Cargar el mapa desde el JSON generado en la vista
+        var graphJSON = JSON.parse('{{ graph_json | escapejs }}');
+        
+        // Renderizar el mapa en el div 'world_map'
+        Plotly.plot('world_map', graphJSON);
+    </script>
+{% endblock %}
