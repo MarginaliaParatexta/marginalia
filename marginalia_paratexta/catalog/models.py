@@ -542,6 +542,7 @@ class Product(models.Model):
     title = models.CharField('Titulo', max_length=10000, null=True)
     build_id = models.CharField('Autor/a de la ficha', max_length= 100, editable=False) #Esto tiene que hacerse con el id del que lo ha creado
     last_modified = models.DateField('Última modificación', editable=False, default=datetime.date.today)
+    creator = models.CharField('Creador de la ficha', max_length=10000,null=True, blank=True)
     creation = models.OneToOneField(Creation, on_delete=models.CASCADE)
     related_products = models.ManyToManyField('self', blank=True, verbose_name='Fichas relacionadas', related_name='related_to')
     def __str__(self):
