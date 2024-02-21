@@ -67,8 +67,9 @@ class ProductListView( generic.ListView):
             any_condition=[]
         else:
             any_condition = any_condition.exclude(id__in=all_conditions.values_list('id', flat=True))
-        print(any_condition)
-        
+            any_condition = any_condition.order_by('title')
+        all_conditions = all_conditions.order_by('title')
+                
         return all_conditions, any_condition
 
     def get_context_data(self, **kwargs):
