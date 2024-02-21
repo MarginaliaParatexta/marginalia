@@ -143,14 +143,14 @@ class ProductFilter(django_filters.FilterSet):
     )
     genero = django_filters.ModelMultipleChoiceFilter(
         field_name='creation__genero',  # Ajusta el campo para reflejar la relación con el género
-        queryset=Genre.objects.all(),
+        queryset=Genre.objects.all().order_by('name'),
         label='Género',
         conjoined=True 
     )
 
     paises = django_filters.ModelMultipleChoiceFilter(
         field_name='creation__paises', 
-        queryset=Country.objects.all(),
+        queryset=Country.objects.all().order_by('name'),
         label='Paises Relacionados',
         conjoined=True 
     )
@@ -159,14 +159,14 @@ class ProductFilter(django_filters.FilterSet):
         label='Tipo de Creación',
         method='filter_by_creation_type',
         choices=[
-            ('movie', 'Movie'),
-            ('tvserie', 'TV Serie'),
-            ('theatre', 'Theatre'),
+            ('movie', 'Pelicula'),
+            ('tvserie', 'Serie TV'),
+            ('theatre', 'Obra teatro'),
             ('musica', 'Musica'),
-            ('boardgame', 'Boardgame'),
-            ('videogame', 'VideoGame'),
+            ('boardgame', 'Juego de mesa'),
+            ('videogame', 'VideoJuego'),
             ('comic', 'Comic'),
-            ('novel', 'Novel'),
+            ('novel', 'Novela'),
         ]
     )
 
