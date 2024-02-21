@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic, View
 import matplotlib.pyplot as plt
 from io import BytesIO
+from django.contrib.contenttypes.models import ContentType
 import base64
 from catalog.filters import ProductFilter
 from .models import BoardGame, Comic, Country, Creation, Genre, Knot, Movie, Musica, Novel, Product, Theatre, Videogame
