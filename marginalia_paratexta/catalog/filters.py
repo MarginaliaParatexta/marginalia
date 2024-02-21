@@ -123,14 +123,14 @@ class TextSearchFilter(django_filters.Filter):
             copia_query_set_for_movie = queryset.filter(id__in=movies_ids)
 
             #Campos de creation
-            search_fields = ['title', 'creation__subtitles', 'creation__original_title', 'creation__authorship', 'creation__synopsis']
+            search_fields = ['title', 'creation__subtitles', 'creation__original_title', 'creation__authorship', 'creation__synopsis', 'creation__palabras_clave__name']
             queries = [Q(**{field + '__icontains': value}) for field in search_fields]
             search_query = reduce(or_, queries)
             queryset = queryset.filter(search_query)
 
             #Combinar todas las creaciones
             queryset = queryset | copia_query_set_for_boardgame | copia_query_set_for_novel | copia_query_set_for_comic | copia_query_set_for_theatre | copia_query_set_for_music | copia_query_set_for_videogame | copia_query_set_for_tvserie | copia_query_set_for_movie
-        return queryset
+        return queryset.distinct()
 
 class ProductFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(field_name='title', lookup_expr='icontains', label='Título')
