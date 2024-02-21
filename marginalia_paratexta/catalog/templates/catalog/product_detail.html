@@ -686,6 +686,10 @@
   {% endif %}
 
   <!-- ADICIONAL-->
-  <p>Autor: {{ product.build_id }}, Última modificación:  {{ product.last_modified }}</p>
+  <p>Última modificación:  {{ product.build_id }}, {{ product.last_modified }}</p>
+
+  {% if  product.creator %}
+    <p>Creador de la ficha: {{ product.creator }}</p>
+  {% endif %}
 
 {% endblock %}
