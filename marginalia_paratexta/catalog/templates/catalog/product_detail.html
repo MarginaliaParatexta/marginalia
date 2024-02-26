@@ -432,7 +432,7 @@
       <h4>Fuentes Clásicas</h4>
       <ul>
         {% for classic_source in product.product_hipotext.hipotext_classic_sources.all %}
-          <li><p>{{ classic_source.name|default:"" }}, {{ classic_source.title|default:"" }} [{{ classic_source.reference|default:""}}], {% if classic_source.others %}Otros: {{ classic_source.others }}  {% endif %}</p></li>
+          <li><p>{{ classic_source.name|default:"" }} {% if classic_source.title %} {% if classic_source.name %}  , {% endif %} {{ classic_source.title }}  {% endif %}  {% if classic_source.reference %} [{{ classic_source.reference }}] {% endif %} {% if classic_source.others %}, Otros: {{ classic_source.others }}  {% endif %}</p></li>
         {% endfor %}
       </ul>
     </div>
@@ -442,7 +442,7 @@
       <h4>Otras Fuentes</h4>
       <ul>
         {% for other_source in product.product_hipotext.hipotext_other_sources.all %}
-          <li><p>{{ other_source.name|default:"" }} {{ other_source.title|default:"" }} {{ other_source.reference|default:"" }}</p></li>
+          <li><p>{{ other_source.name|default:"" }} {% if other_source.title %} {% if other_source.name %}  , {% endif %} {{ other_source.title }}  {% endif %}  {% if other_source.reference %} [{{ other_source.reference }}] {% endif %}</p></li>
         {% endfor %}
       </ul>
     </div>
@@ -452,7 +452,7 @@
       <h4>Fuentes Documentales</h4>
       <ul>
         {% for documentary_source in product.product_hipotext.hipotext_documentary_sources.all %}
-          <li><p>{{ documentary_source.name|default:"" }} {{ documentary_source.title|default:"" }} {{documentary_source.reference|default:"" }}</p></li>
+          <li><p>{{ documentary_source.name|default:"" }} {% if documentary_source.title %} {% if documentary_source.name %}  , {% endif %} {{ documentary_source.title }}  {% endif %}  {% if documentary_source.reference %} [{{ documentary_source.reference }}] {% endif %}</p></li>
         {% endfor %}
       </ul>
     </div>
@@ -691,5 +691,4 @@
   {% if  product.creator %}
     <p>Creador de la ficha: {{ product.creator }}</p>
   {% endif %}
-
 {% endblock %}
