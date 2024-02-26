@@ -4,6 +4,28 @@
     <!-- Div para el mapa -->
     <div id="world_map"></div>
 
+    <form method="GET" action="{% url 'map' %}">
+        <label for="keywords">Palabras Clave:</label>
+        <label for="formato_ficha">Formato:</label>
+        <select name="formato_ficha" id="formato_ficha" multiple>
+            <option value="movie">Película</option>
+            <option value="tvserie">Serie de TV</option>
+            <option value="theatre">Obra de teatro</option>
+            <option value="musica">Música</option>
+            <option value="boardgame">Juego de mesa</option>
+            <option value="videogame">Videojuego</option>
+            <option value="comic">Cómic</option>
+            <option value="novel">Novela</option>
+        </select>
+        <select name="keywords" id="keywords" multiple>
+            <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
+            {% for keyword in palabras_clave %}
+                <option value="{{ keyword }}">{{ keyword }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filtrar</button>
+    </form>
     <script>
         // Cargar el mapa desde el JSON generado en la vista
         var graphJSON = JSON.parse('{{ graph_json | escapejs }}');
