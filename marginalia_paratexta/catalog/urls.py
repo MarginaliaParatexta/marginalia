@@ -8,6 +8,7 @@ urlpatterns = [
     path('knots/', views.KnotListView.as_view(), name='knots'),
     path('graph/', views.grafico_barras_view, name='graph'),
     path('map/', views.world_map_view, name='map'),
+    path('wordcloud/', views.word_cloud, name='wordcloud'),
     re_path(r'^creation/(?P<pk>[0-9a-f-]+)$', views.product_detail_view, name='creation-detail'),
     re_path(r'^knot/(?P<pk>[0-9a-f-]+)$', views.knot_detail_view, name='knot-detail'),
 ]
