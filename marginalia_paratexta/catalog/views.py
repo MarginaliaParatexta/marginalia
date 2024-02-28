@@ -12,6 +12,8 @@ import plotly.graph_objs as go
 from functools import reduce
 from operator import or_
 from django.db.models import Q
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 class SignUpView(View):
     def get(self, request):
         form = SignUpForm()
@@ -151,18 +153,12 @@ def knot_detail_view(request, pk):
 
     return render(request, 'catalog/knot_detail.html', context=context)
 
-def grafico_barras_view(request):
+def get_creaciones(request):
     generos = request.GET.getlist('genero') if 'genero' in request.GET else []
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
     paises = request.GET.getlist('paises') if 'paises' in request.GET else []
-    anio_inicio_str = request.GET.get('anio_inicio', '1930')
-    anio_fin_str = request.GET.get('anio_fin', '2030')
     year_range_str = request.GET.get('year_range', '10')
     keyWords = request.GET.getlist('keywords') if 'keywords' in request.GET else []
-    anos = range(1930, 2031, 10)
-    # Convertir los valores a enteros
-    anio_inicio = int(anio_inicio_str)
-    anio_fin = int(anio_fin_str)
     year_range = int(year_range_str)
     paises_keywords = False
     keywords_paises_formato= False
@@ -218,7 +214,6 @@ def grafico_barras_view(request):
             else:
                 titulo = f'Número de Creaciones con formato: {", ".join(formatos_nombres)} cada {year_range} años con género: {", ".join(generos)}'
 
-
     elif len(keyWords) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keyWords]
@@ -249,7 +244,6 @@ def grafico_barras_view(request):
             if keywords_paises_formato:
                 titulo = f'Número de Creaciones con Países {", ".join(paises)} cada {year_range} años con formato: {", ".join(formatos_nombres)} y palabras clave: {", ".join(keyWords)}'
                 
-
     elif len(paises) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(paises__name=pais) for pais in paises]
@@ -278,6 +272,19 @@ def grafico_barras_view(request):
     else:
         creaciones = Creation.objects.all()
         titulo = f'Número de Creaciones cada {year_range} años'
+    return titulo, creaciones
+
+def grafico_barras_view(request):
+    year_range_str = request.GET.get('year_range', '10')
+    year_range = int(year_range_str)
+    anio_inicio_str = request.GET.get('anio_inicio', '1930')
+    anio_fin_str = request.GET.get('anio_fin', '2030')
+    year_range_str = request.GET.get('year_range', '10')
+    anos = range(1930, 2031, 10)
+    # Convertir los valores a enteros
+    anio_inicio = int(anio_inicio_str)
+    anio_fin = int(anio_fin_str)
+    titulo, creaciones = get_creaciones(request)
     # Lógica para generar el gráfico de barras
     # Por ejemplo, contar el número de creaciones por década
     decadas = range(anio_inicio, anio_fin, year_range)
@@ -385,3 +392,28 @@ def world_map_view(request):
     graph_json = fig.to_json()
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
     return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave})
+
+def word_cloud(request):
+    _, creaciones = get_creaciones(request)
+    palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
+
+    # Crear un contador de palabras clave
+    word_counter = {}
+    for palabra in palabras_clave:
+        if palabra in word_counter:
+            word_counter[palabra] += 1
+        else:
+            word_counter[palabra] = 1
+    word_counter = {key: value for key, value in word_counter.items() if key is not None}    # Crear el objeto WordCloud con la fuente TTF especificada
+    wordcloud1 = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(word_counter)
+
+    buffer = BytesIO()
+    wordcloud1.to_image().save(buffer, format="PNG")
+    img_str = base64.b64encode(buffer.getvalue()).decode()
+    lista_paises = Creation.objects.values_list('paises__name', flat=True).distinct().exclude(paises__name=None).order_by('paises__name')
+    lista_de_generos = Creation.objects.values_list('genero__name', flat=True).distinct().exclude(genero__name=None).order_by('genero__name')
+    anos = range(1930, 2031, 10)
+    # Pasar el wordcloud como una cadena base64 al contexto de renderización
+    context = {'wordcloud_image': img_str, 'lista_de_generos': lista_de_generos, 'anos': anos, 'paises': lista_paises}
+
+    return render(request, 'catalog/wordcloud.html', context)
