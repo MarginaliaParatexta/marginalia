@@ -1,6 +1,5 @@
 from django.urls import path, re_path
 from . import views
-from django.conf.urls import url
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -11,4 +10,9 @@ urlpatterns = [
     path('wordcloud/', views.word_cloud, name='wordcloud'),
     re_path(r'^creation/(?P<pk>[0-9a-f-]+)$', views.product_detail_view, name='creation-detail'),
     re_path(r'^knot/(?P<pk>[0-9a-f-]+)$', views.knot_detail_view, name='knot-detail'),
+    path('country/<str:country_iso>/creations/formato/<str:formatos>/', views.country_creations_list_formato, name='country_creations_list_formato'),
+    path('country/<str:country_iso>/creations/keyWord/<str:keyWords>/', views.country_creations_list_keyWord, name='country_creations_list_keyWord'),
+    path('country/<str:country_iso>/creations/<str:formatos>/<str:keywords>/', views.country_creations_list, name='country_creations_list'),
+    path('country/<str:country_iso>/creations/', views.country_creations_list, name='country_creations_list'),
+
 ]
