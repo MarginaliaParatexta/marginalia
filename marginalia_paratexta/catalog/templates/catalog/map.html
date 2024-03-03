@@ -2,7 +2,6 @@
 
 {% block content %}
     <!-- Div para el mapa -->
-    <div id="world_map"></div>
 
     <form method="GET" action="{% url 'map' %}">
         <label for="keywords">Palabras Clave:</label>
@@ -26,11 +25,34 @@
 
         <button type="submit">Filtrar</button>
     </form>
+    <div id="world_map"></div>
     <script>
         // Cargar el mapa desde el JSON generado en la vista
+
         var graphJSON = JSON.parse('{{ graph_json | escapejs }}');
-        
+        var formatos = JSON.parse('{{ formatos_seleccionados | escapejs }}');
+        var keyWords = JSON.parse('{{ keywords_seleccionadas | escapejs }}');
         // Renderizar el mapa en el div 'world_map'
         Plotly.plot('world_map', graphJSON);
+
+        document.getElementById('world_map').on('plotly_click', function(data){
+        // Verificar si el clic fue en un país
+        if(data.points[0].location){
+            // Obtener el código ISO del país clicado
+            var countryIso = data.points[0].location;
+            console.log(formatos)
+            if (formatos.length === 0 && keyWords.length === 0){
+                window.location.href = `/catalog/country/${countryIso}/creations/`;
+            }
+            else if(formatos.length > 0 && keyWords.length > 0) {
+                // Redirigir a la vista de detalles del país
+                window.location.href = `/catalog/country/${countryIso}/creations/${formatos.join(',')}/${keyWords.join(',')}/`;
+            } else if(formatos.length > 0) {
+                window.location.href = `/catalog/country/${countryIso}/creations/formato/${formatos.join(',')}/`;
+            } else {
+                window.location.href = `/catalog/country/${countryIso}/creations/keyWord/${keyWords.join(',')}/`;
+            }
+        }
+    });
     </script>
 {% endblock %}
