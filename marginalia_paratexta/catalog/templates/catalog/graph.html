@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Gráfico de Barras: Número de Creaciones por Años</h1>
+    <h1>{{ titulo }}</h1>
 
     <!-- Formulario de filtrado por género -->
     <form method="GET" action="{% url 'graph' %}">
@@ -60,7 +60,45 @@
     </form>
 
     <!-- Mostrar el gráfico de barras -->
-    <img src="data:image/png;base64,{{ imagen_base64 }}" alt="Gráfico de Barras">
+    <canvas id="grafico"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var data = JSON.parse('{{ data|escapejs }}');
+        var ctx = document.getElementById('grafico').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Valores',
+                    data: data.values,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {            
+                scales: {
+                    y: {
+                        ticks: {
+                            precision: 0, // Configura la precisión del eje y a 0 para mostrar solo valores enteros
+                            stepSize: 1 // Establece el tamaño del paso a 1 para asegurar que solo se muestren valores enteros
+                        }
+                    }
+                },
+                onClick: function(event, elements) {
+                    if (elements.length > 0) {
+                        var index = elements[0]._index;
+                        var label = data.labels[index];
+                        // Aquí rediriges a la URL deseada según la barra clicada
+                        console.log('Clic en la barra:', label);
+                        window.location.href = '/ruta/a/vista/' + label;
+                    }
+                }
+            }
+        });
+    </script>
 
 
 {% endblock %}
