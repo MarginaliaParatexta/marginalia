@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>{{ titulo }}</h2>
+    <ul>
+    {% for creation in creations %}
+    <li><a href="{% url 'creation-detail' pk=creation.product.id %}">{{ creation.product.title }}</a></li> <!-- Ajusta esto según tu modelo de creación -->
+    {% endfor %}
+    </ul>
+{% endblock %}
