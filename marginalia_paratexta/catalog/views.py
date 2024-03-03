@@ -298,28 +298,17 @@ def grafico_barras_view(request):
         num_creaciones_por_decada = [creaciones.filter(publication_year__range=(decada, decada + 9)).count() for decada in decadas]
     
     # Crear el gráfico de barras
-    plt.figure(figsize=(10, 6))  # Tamaño del gráfico
-    plt.bar(decadas, num_creaciones_por_decada, width=5, align='center')  # Ancho de las barras y alineación
-    plt.xticks(decadas) 
-    plt.xlabel('Años')
-    plt.ylabel('Número de Creaciones')
-    plt.title(titulo, wrap=True)
-
-    plt.yticks(range(max(num_creaciones_por_decada) + 1))
-    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}'))
-
-    # Convertir el gráfico a una imagen base64 para mostrar en el template
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    imagen_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    data = {
+        'labels': list(decadas),
+        'values': num_creaciones_por_decada
+    }
     rango_anos = [10, 5]
     # Lista de géneros para mostrar en el formulario de filtrado
     lista_paises = Creation.objects.values_list('paises__name', flat=True).distinct().exclude(paises__name=None).order_by('paises__name')
     lista_de_generos = Creation.objects.values_list('genero__name', flat=True).distinct().exclude(genero__name=None).order_by('genero__name')
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
     # Retorna el contexto con los datos del gráfico y la lista de géneros
-    return render(request, 'catalog/graph.html', {'imagen_base64': imagen_base64, 'lista_de_generos': lista_de_generos, 'anos': anos, 'rango_anos': rango_anos, 'palabras_clave': lista_de_palabras_clave, 'paises': lista_paises })
+    return render(request, 'catalog/graph.html', { 'data':json.dumps(data), 'titulo': titulo, 'lista_de_generos': lista_de_generos, 'anos': anos, 'rango_anos': rango_anos, 'palabras_clave': lista_de_palabras_clave, 'paises': lista_paises })
 
 def world_map_view(request):
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
