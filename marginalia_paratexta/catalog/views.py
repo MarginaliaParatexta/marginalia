@@ -14,6 +14,8 @@ from operator import or_
 from django.db.models import Q
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import json
+
 class SignUpView(View):
     def get(self, request):
         form = SignUpForm()
@@ -152,6 +154,7 @@ def knot_detail_view(request, pk):
     }
 
     return render(request, 'catalog/knot_detail.html', context=context)
+
 
 def get_creaciones(request):
     generos = request.GET.getlist('genero') if 'genero' in request.GET else []
@@ -387,11 +390,64 @@ def world_map_view(request):
 
     # Crear la figura del mapa
     fig = go.Figure(data=data, layout=layout)
-
+    formatos_seleccionados = json.dumps(formatos)
+    keywords_seleccionadas = json.dumps(keyWords)
     # Convertir la figura a JSON para enviarla a la plantilla
     graph_json = fig.to_json()
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
-    return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave})
+    return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave, 'formatos_seleccionados': formatos_seleccionados, 'keywords_seleccionadas': keywords_seleccionadas})
+
+def country_creations_list(request, country_iso, formatos=None, keywords=None):
+    # Filtrar las creaciones por país
+    formatos_list = formatos.split(',') if formatos else []
+    keywords_list = keywords.split(',') if keywords else []
+    creations = Creation.objects.filter(paises__iso_code=country_iso)
+    country_name = Country.objects.get(iso_code=country_iso).name
+    titulo = f'Creaciones del País {country_name}'    
+    if len(keywords_list) > 0:
+        content_types = ContentType.objects.filter(model__in=formatos_list)
+        creaciones = Creation.objects.all()
+        consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keywords_list]
+        consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+        consulta_final = reduce(or_, consultas_q)
+        creaciones = creaciones.filter(consulta_final).distinct()
+        titulo = f'Creaciones del País {country_name} con palabras clave {", ".join(keywords_list)} o formato {", ".join(formatos_list)}'
+    else:
+        creaciones = Creation.objects.all()
+    creations = creaciones.filter(paises__iso_code=country_iso)
+    # Aplicar los filtros
+    return render(request, 'catalog/country_creations_list.html', {'creations': creations, 'titulo': titulo})
+
+def country_creations_list_formato(request, country_iso, formatos=None):
+    # Filtrar las creaciones por país
+    formatos_list = formatos.split(',') if formatos else []
+    creations = Creation.objects.filter(paises__iso_code=country_iso)
+    country_name = Country.objects.get(iso_code=country_iso).name
+    content_types = ContentType.objects.filter(model__in=formatos_list)
+    creaciones = Creation.objects.all()
+    consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
+    consulta_final = reduce(or_, consultas_q)
+    creaciones = creaciones.filter(consulta_final).distinct()
+    titulo = f'Creaciones del País {country_name} con formato {", ".join(formatos_list)}'
+
+    creations = creaciones.filter(paises__iso_code=country_iso)
+    # Aplicar los filtros
+    return render(request, 'catalog/country_creations_list.html', {'creations': creations, 'titulo': titulo})
+
+def country_creations_list_keyWord(request, country_iso, keyWords=None):
+    # Filtrar las creaciones por país
+    keywords_list = keyWords.split(',') if keyWords else []
+    creations = Creation.objects.filter(paises__iso_code=country_iso)
+    country_name = Country.objects.get(iso_code=country_iso).name
+    creaciones = Creation.objects.all()
+    consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keywords_list]    
+    consulta_final = reduce(or_, consultas_q)
+    creaciones = creaciones.filter(consulta_final).distinct()
+    titulo = f'Creaciones del País {country_name} con palabras clave {", ".join(keywords_list)}'
+
+    creations = creaciones.filter(paises__iso_code=country_iso)
+    # Aplicar los filtros
+    return render(request, 'catalog/country_creations_list.html', {'creations': creations, 'titulo': titulo})
 
 def word_cloud(request):
     _, creaciones = get_creaciones(request)
