@@ -156,7 +156,7 @@ def knot_detail_view(request, pk):
     return render(request, 'catalog/knot_detail.html', context=context)
 
 
-def get_creaciones(request, generos, formatos, paises, keyWords):
+def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
     year_range_str = request.GET.get('year_range', '10')
     year_range = int(year_range_str)
     paises_keywords = False
@@ -543,7 +543,10 @@ def country_creations_list_keyWord(request, country_iso, keyWords=None):
     return render(request, 'catalog/country_creations_list.html', {'creations': creations, 'titulo': titulo})
 
 def word_cloud(request):
-    _, creaciones = get_creaciones(request)
+    generos = request.GET.getlist('genero') if 'genero' in request.GET else []
+    formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
+    paises = request.GET.getlist('paises') if 'paises' in request.GET else []
+    _, creaciones = get_creaciones(request, generos, formatos, paises)
     palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
 
     # Crear un contador de palabras clave
