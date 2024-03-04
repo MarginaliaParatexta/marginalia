@@ -5,7 +5,7 @@ from io import BytesIO
 import base64
 from django.contrib.contenttypes.models import ContentType
 from catalog.filters import ProductFilter
-from .models import BoardGame, Comic, Country, Creation, Genre, Knot, Movie, Musica, Novel, Product, Theatre, Videogame
+from .models import BoardGame, Comic, Country, Creation, Genre, KeyWord, Knot, Movie, Musica, Novel, Product, Theatre, Videogame
 from django.contrib import messages
 from .forms import SignUpForm
 import plotly.graph_objs as go
@@ -156,12 +156,8 @@ def knot_detail_view(request, pk):
     return render(request, 'catalog/knot_detail.html', context=context)
 
 
-def get_creaciones(request):
-    generos = request.GET.getlist('genero') if 'genero' in request.GET else []
-    formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
-    paises = request.GET.getlist('paises') if 'paises' in request.GET else []
+def get_creaciones(request, generos, formatos, paises, keyWords):
     year_range_str = request.GET.get('year_range', '10')
-    keyWords = request.GET.getlist('keywords') if 'keywords' in request.GET else []
     year_range = int(year_range_str)
     paises_keywords = False
     keywords_paises_formato= False
@@ -278,6 +274,10 @@ def get_creaciones(request):
     return titulo, creaciones
 
 def grafico_barras_view(request):
+    generos = request.GET.getlist('genero') if 'genero' in request.GET else []
+    formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
+    paises = request.GET.getlist('paises') if 'paises' in request.GET else []
+    keyWords = request.GET.getlist('keywords') if 'keywords' in request.GET else []
     year_range_str = request.GET.get('year_range', '10')
     year_range = int(year_range_str)
     anio_inicio_str = request.GET.get('anio_inicio', '1930')
@@ -287,7 +287,7 @@ def grafico_barras_view(request):
     # Convertir los valores a enteros
     anio_inicio = int(anio_inicio_str)
     anio_fin = int(anio_fin_str)
-    titulo, creaciones = get_creaciones(request)
+    titulo, creaciones = get_creaciones(request, generos, formatos, paises, keyWords)
     # Lógica para generar el gráfico de barras
     # Por ejemplo, contar el número de creaciones por década
     decadas = range(anio_inicio, anio_fin, year_range)
@@ -308,7 +308,111 @@ def grafico_barras_view(request):
     lista_de_generos = Creation.objects.values_list('genero__name', flat=True).distinct().exclude(genero__name=None).order_by('genero__name')
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
     # Retorna el contexto con los datos del gráfico y la lista de géneros
-    return render(request, 'catalog/graph.html', { 'data':json.dumps(data), 'titulo': titulo, 'lista_de_generos': lista_de_generos, 'anos': anos, 'rango_anos': rango_anos, 'palabras_clave': lista_de_palabras_clave, 'paises': lista_paises })
+    return render(request, 'catalog/graph.html', { 'data':json.dumps(data), 'titulo': titulo, 'lista_de_generos': lista_de_generos, 'anos': anos, 
+    'rango_anos': rango_anos, 'palabras_clave': lista_de_palabras_clave, 'paises': lista_paises, 'year_range': json.dumps(year_range),
+    'formatos_seleccionados': json.dumps(formatos), 'paises_seleccionados': json.dumps(paises), 'keywords_seleccionados': json.dumps(keyWords), 'generos_seleccionados': json.dumps(generos) })
+
+def year_creations_list(request, year, year_range, filter1=None, filter2=None, filter3=None, filter4=None):
+    # Filtrar las creaciones por país
+    filter1 = filter1.split(',') if filter1 else []
+    filter2 = filter2.split(',') if filter2 else []
+    filter3 = filter3.split(',') if filter3 else []
+    filter4 = filter4.split(',') if filter4 else []
+    creaciones = Creation.objects.all()
+    titulo = f'Creaciones entre los años {year}, {year + year_range}'    
+    creaciones = creaciones.filter(publication_year__range=(year, year + (year_range-1)))
+    if len(filter1) == 0:
+        return render(request, 'catalog/country_creations_list.html', {'creations': creaciones, 'titulo': titulo})
+
+    if len(filter4) > 0:
+        content_types = ContentType.objects.filter(model__in=filter4)
+        consultas_q = [Q(genero__name=genre) for genre in filter1]
+        consultas_q.extend([Q(paises__name=pais) for pais in filter2])
+        consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter3])
+        consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+        consulta_final = reduce(or_, consultas_q)
+        creaciones = creaciones.filter(consulta_final).distinct()
+        titulo = f'Creaciones con Países {", ".join(filter2)} entre {year} y {year + year_range} con formato: {", ".join(filter4)}, género:  {", ".join(filter1)} y palabras clave: {", ".join(filter3)}'
+        return render(request, 'catalog/country_creations_list.html', {'creations': creaciones, 'titulo': titulo})
+    
+    if len(filter3) > 0:
+        if Genre.objects.filter(name=filter1[0]).exists():
+            consultas_q = [Q(genero__name=genre) for genre in filter1]
+            if Country.objects.filter(name=filter2[0]).exists():
+                consultas_q.extend([Q(paises__name=pais) for pais in filter2])
+                if KeyWord.objects.filter(name=filter3[0]).exists():
+                    consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter3])
+                    titulo = f'Creaciones con Países {", ".join(filter2)} entre {year} y {year + year_range} con género: {", ".join(filter1)} y palabras clave: {", ".join(filter3)}'
+                else:
+                    content_types = ContentType.objects.filter(model__in=filter3)
+                    consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+                    titulo = f'Creaciones con Países {", ".join(filter2)} entre {year} y {year + year_range} con formato: {", ".join(filter3)} y género: {", ".join(filter1)}'
+            else:
+                content_types = ContentType.objects.filter(model__in=filter3)
+                consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter2])
+                consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+                titulo = f'Creaciones entre {year} y {year + year_range} con formato: {", ".join(filter3)}, género:  {", ".join(filter1)} y palabras clave: {", ".join(filter2)}'
+        else:
+            content_types = ContentType.objects.filter(model__in=filter3)
+            consultas_q = ([Q(paises__name=pais) for pais in filter1])
+            consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter2])
+            consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+            titulo = f'Número de Creaciones con Países {", ".join(filter1)} entre {year} y {year + year_range} con formato: {", ".join(filter3)} y palabras clave: {", ".join(filter2)}'
+        
+        consulta_final = reduce(or_, consultas_q)
+        creaciones = creaciones.filter(consulta_final).distinct()
+        return render(request, 'catalog/country_creations_list.html', {'creations': creaciones, 'titulo': titulo})
+
+    if len(filter2) > 0:
+        if Genre.objects.filter(name=filter1[0]).exists():
+            consultas_q = [Q(genero__name=genre) for genre in filter1]
+            if Country.objects.filter(name=filter2[0]).exists():
+                consultas_q.extend([Q(paises__name=pais) for pais in filter2])
+                titulo = f'Creaciones con Países {", ".join(filter2)} entre {year} y {year + year_range} con género: {", ".join(filter1)}'
+            elif KeyWord.objects.filter(name=filter2[0]).exists():
+                consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter2])
+                titulo = f'Creaciones entre {year} y {year + year_range} con género: {", ".join(filter1)} y  palabras clave: {", ".join(filter2)}'
+            else:
+                content_types = ContentType.objects.filter(model__in=filter2)
+                consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+                titulo = f'Creaciones entre {year} y {year + year_range} con formato: {", ".join(filter2)} y género: {", ".join(filter1)}'
+        elif Country.objects.filter(name=filter1[0]).exists():
+            consultas_q = ([Q(paises__name=pais) for pais in filter1])
+            if KeyWord.objects.filter(name=filter2[0]).exists():
+                consultas_q.extend([Q(palabras_clave__name=keyWord) for keyWord in filter2])
+                titulo = f'Creaciones con Países {", ".join(filter2)} entre {year} y {year + year_range} con palabras clave: {", ".join(filter2)}'
+            else:
+                content_types = ContentType.objects.filter(model__in=filter2)
+                consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+                titulo = f'Creaciones con Países {", ".join(filter1)} entre {year} y {year + year_range} con formato: {", ".join(filter2)}'
+        else:
+            content_types = ContentType.objects.filter(model__in=filter2)
+            consultas_q = ([Q(palabras_clave__name=keyWord) for keyWord in filter1])
+            consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
+            titulo = f'Creaciones entre {year} y {year + year_range} con formato: {", ".join(filter2)} y palabras clave: {", ".join(filter1)}'
+        consulta_final = reduce(or_, consultas_q)
+        creaciones = creaciones.filter(consulta_final).distinct()
+        return render(request, 'catalog/country_creations_list.html', {'creations': creaciones, 'titulo': titulo})
+
+    if Genre.objects.filter(name=filter1[0]).exists():
+        consultas_q = [Q(genero__name=genre) for genre in filter1]
+        titulo = f'Creaciones entre {year} y {year + year_range} con género:  {", ".join(filter1)}'
+
+    elif Country.objects.filter(name=filter1[0]).exists():
+        consultas_q = [Q(paises__name=pais) for pais in filter1]
+        titulo = f'Creaciones con Países {", ".join(filter1)} entre {year} y {year + year_range}'
+
+    elif KeyWord.objects.filter(name=filter1[0]).exists():
+        consultas_q = ([Q(palabras_clave__name=keyWord) for keyWord in filter1])
+        titulo = f'Creaciones entre {year} y {year + year_range} con palabras clave: {", ".join(filter1)}'
+    else:
+        content_types = ContentType.objects.filter(model__in=filter1)
+        titulo = f'Creaciones entre {year} y {year + year_range} con formato: {", ".join(filter1)}'
+        consultas_q = ([Q(polymorphic_ctype=content_type) for content_type in content_types])
+
+    consulta_final = reduce(or_, consultas_q)
+    creaciones = creaciones.filter(consulta_final).distinct()
+    return render(request, 'catalog/country_creations_list.html', {'creations': creaciones, 'titulo': titulo})
 
 def world_map_view(request):
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
