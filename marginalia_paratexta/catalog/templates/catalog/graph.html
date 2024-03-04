@@ -64,40 +64,50 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var data = JSON.parse('{{ data|escapejs }}');
-        var ctx = document.getElementById('grafico').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: 'Valores',
-                    data: data.values,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {            
-                scales: {
-                    y: {
-                        ticks: {
-                            precision: 0, // Configura la precisión del eje y a 0 para mostrar solo valores enteros
-                            stepSize: 1 // Establece el tamaño del paso a 1 para asegurar que solo se muestren valores enteros
-                        }
-                    }
+        window.onload = function() {
+            var data = JSON.parse('{{ data|escapejs }}');
+            var year_range = JSON.parse('{{ year_range|escapejs }}');
+            var ctx = document.getElementById('grafico').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Valores',
+                        data: data.values,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
                 },
-                onClick: function(event, elements) {
-                    if (elements.length > 0) {
-                        var index = elements[0]._index;
-                        var label = data.labels[index];
-                        // Aquí rediriges a la URL deseada según la barra clicada
-                        console.log('Clic en la barra:', label);
-                        window.location.href = '/ruta/a/vista/' + label;
+            });
+            ctx.canvas.onclick = function(event) {
+                var activeElements = myChart.getElementsAtEventForMode(event, 'nearest', {intersect: true}, true);
+                var formatos = JSON.parse('{{ formatos_seleccionados | escapejs }}');
+                var keyWords = JSON.parse('{{ keywords_seleccionados | escapejs }}');
+                var paises = JSON.parse('{{ paises_seleccionados | escapejs }}');
+                var generos = JSON.parse('{{ generos_seleccionados | escapejs }}');
+                if (activeElements.length > 0) {
+                    var index = activeElements[0].index;
+                    var label = data.labels[index];
+                    // Resto del código de redirección aquí
+                    var url = `/catalog/year/${label}/${year_range}/creations`
+                    if (generos.length > 0) {
+                        url = url + `/${generos.join(',')}`
                     }
+                    if (paises.length > 0) {
+                        url = url + `/${paises.join(',')}`
+                    }
+                    if (keyWords.length > 0) {
+                        url = url + `/${keyWords.join(',')}`
+                    }
+                    if (formatos.length > 0) {
+                        url = url + `/${formatos.join(',')}`
+                    }
+                    window.location.href = url;
                 }
-            }
-        });
+            };
+        };
     </script>
 
 
