@@ -458,6 +458,7 @@ class Metatext(models.Model):
 class Declaration(models.Model):
     description = models.CharField('Descripción', max_length=10000, null=True, blank=True)
     link = models.CharField('Link', max_length=10000, null=True, blank=True)
+    details = models.CharField('Detalles', max_length=10000, null=True, blank=True)
     metatext = models.ForeignKey(Metatext, on_delete=models.CASCADE, related_name="metatext_declarations") 
     class Meta:
         verbose_name_plural = "Declaraciones autorizadas"
@@ -470,6 +471,7 @@ class Declaration(models.Model):
 class Criticism(models.Model):
     description = models.CharField('Descripción', max_length=10000, null=True, blank=True)
     link = models.CharField('Link', max_length=10000, null=True, blank=True)
+    details = models.CharField('Detalles', max_length=10000, null=True, blank=True)
     metatext = models.ForeignKey(Metatext, on_delete=models.CASCADE, related_name="metatext_criticism") 
     class Meta:
         verbose_name_plural = "Críticas"
@@ -482,6 +484,7 @@ class Criticism(models.Model):
 class PressArticle(models.Model):
     description = models.CharField('Descripción', max_length=10000, null=True, blank=True)
     link = models.CharField('Link', max_length=10000, null=True, blank=True)
+    details = models.CharField('Detalles', max_length=10000, null=True, blank=True)
     metatext = models.ForeignKey(Metatext, on_delete=models.CASCADE, related_name="metatext_press_article") 
     class Meta:
         verbose_name_plural = "Artículos de prensa"
