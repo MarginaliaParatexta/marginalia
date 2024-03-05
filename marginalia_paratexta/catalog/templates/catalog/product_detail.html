@@ -578,6 +578,9 @@
             {% if declaration.link %}
               <a href="{{ declaration.link }}" target="_blank">Enlace a la declaración</a>
             {% endif %}
+            {% if declaration.details %}
+              <p>Detalles: {{ declaration.details }}</p>
+            {% endif %}
           </ul>
         {% endfor %}
       {% endif %}
@@ -592,6 +595,9 @@
             {% if criticism.link %}
               <a href="{{ criticism.link }}" target="_blank">Enlace a la crítica</a>
             {% endif %}
+            {% if criticism.details %}
+              <p>Detalles: {{ criticism.details }}</p>
+            {% endif %}
           </ul>
         {% endfor %}
       {% endif %}
@@ -605,6 +611,9 @@
             <p>{{ press_article.description|default:"" }}</p>
             {% if press_article.link %}
               <a href="{{ press_article.link }}" target="_blank">Enlace al artículo</a>
+            {% endif %}
+            {% if press_article.details %}
+              <p>Detalles: {{ press_article.details }}</p>
             {% endif %}
           </ul>
         {% endfor %}
