@@ -136,7 +136,7 @@ class Movie(MediaCreation):
     costume = models.TextField('Vestuario',  null=True, blank=True)
     sound = models.TextField('Sonido',  null=True, blank=True)
     other_data = models.TextField('Otros datos',  null=True, blank=True)
-    earnings = models.IntegerField("Taquilla", null=True, blank=True)
+    earnings = models.CharField('Taquilla', max_length=10000, null=True, blank=True)
     remake = models.TextField('Remake info', null=True, blank=True)
     remake_link =  models.OneToOneField('Product', on_delete=models.SET_NULL, blank=True, null=True, name='remake_link', related_name="remake_movie")
     class Meta:
@@ -293,7 +293,7 @@ class LibraryCreation(Creation):
 
 class Comic(LibraryCreation):
     script = models.TextField('Guión', null=True, blank=True)
-    design = models.TextField('Diseño',  null=True, blank=True)
+    design = models.TextField('Dibujo',  null=True, blank=True)
     colecciones = models.ManyToManyField(Collection, related_name='collection_comic', blank=True)
     class Meta:
         verbose_name = "Comic"
