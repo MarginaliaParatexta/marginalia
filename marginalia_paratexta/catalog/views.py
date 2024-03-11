@@ -156,7 +156,7 @@ def knot_detail_view(request, pk):
     return render(request, 'catalog/knot_detail.html', context=context)
 
 
-def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
+def get_creaciones(request, query, generos=[], formatos=[], paises=[], keyWords=[]):
     year_range_str = request.GET.get('year_range', '10')
     year_range = int(year_range_str)
     paises_keywords = False
@@ -166,17 +166,26 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
     if len(generos) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(genero__name=genero) for genero in generos]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            for consulta_q in consultas_q:
+                creaciones = creaciones.filter(consulta_q)
         titulo = f'Número de Creaciones con Género {", ".join(generos)} cada {year_range} años'
 
         if len(keyWords) > 0:
-            creaciones2 = Creation.objects.all()
+            creaciones3 = Creation.objects.all()
             consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keyWords]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones2 = creaciones2.filter(consulta_final).distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                for consulta_q in consultas_q:
+                    creaciones = creaciones.filter(consulta_q)
             titulo = f'Número de Creaciones con Género {", ".join(generos)} cada {year_range} años y con palabras clave: {", ".join(keyWords)}'
-            creaciones = creaciones | creaciones2
             creaciones = creaciones.distinct()
             if len(formatos) > 0:
                 genero_keywords_formato= True
@@ -188,10 +197,14 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
         if len(paises) > 0:
             creaciones3 = Creation.objects.all()
             consultas_q = [Q(paises__name=pais) for pais in paises]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
-            creaciones = creaciones.distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                for consulta_q in consultas_q:
+                    creaciones = creaciones.filter(consulta_q)
             titulo = f'Número de Creaciones con Género {", ".join(generos)} cada {year_range} años y con paises: {", ".join(paises)}'
             if paises_keywords:
                 titulo = f'Número de Creaciones con Género {", ".join(generos)} cada {year_range} años, con palabras clave: {", ".join(keyWords)} y paises: {", ".join(paises)}'
@@ -200,10 +213,14 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
             creaciones3 = Creation.objects.all()
             content_types = ContentType.objects.filter(model__in=formatos)
             consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
-            creaciones = creaciones.distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                consulta_final = reduce(or_, consultas_q)
+                creaciones = creaciones.filter(consulta_final).distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
             
             if genero_keywords_paises_formato:
@@ -216,16 +233,24 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
     elif len(keyWords) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keyWords]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            for consulta_q in consultas_q:
+                creaciones = creaciones.filter(consulta_q)
         titulo = f'Número de Creaciones cada {year_range} años con palabras clave: {", ".join(keyWords)}'
         if len(paises) > 0:
             creaciones3 = Creation.objects.all()
             consultas_q = [Q(paises__name=pais) for pais in paises]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
-            creaciones = creaciones.distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                for consulta_q in consultas_q:
+                    creaciones = creaciones.filter(consulta_q)
             titulo = f'Número de Creaciones con Países {", ".join(paises)} cada {year_range} años con palabras clave: {", ".join(keyWords)}'
             if len(formatos)>0:
                 keywords_paises_formato=True
@@ -234,10 +259,14 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
             creaciones3 = Creation.objects.all()
             content_types = ContentType.objects.filter(model__in=formatos)
             consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
-            creaciones = creaciones.distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                consulta_final = reduce(or_, consultas_q)
+                creaciones = creaciones.filter(consulta_final).distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
             titulo = f'Número de Creaciones con formato: {", ".join(formatos_nombres)} cada {year_range} años con palabras clave: {", ".join(keyWords)}'
             if keywords_paises_formato:
@@ -246,17 +275,25 @@ def get_creaciones(request, generos=[], formatos=[], paises=[], keyWords=[]):
     elif len(paises) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(paises__name=pais) for pais in paises]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            for consulta_q in consultas_q:
+                creaciones = creaciones.filter(consulta_q)
         titulo = f'Número de Creaciones cada {year_range} años con paises: {", ".join(paises)}'
         if len(formatos) > 0:
             creaciones3 = Creation.objects.all()
             content_types = ContentType.objects.filter(model__in=formatos)
             consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
-            creaciones = creaciones.distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+                creaciones = creaciones.distinct()
+            else:
+                consulta_final = reduce(or_, consultas_q)
+                creaciones = creaciones.filter(consulta_final).distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
             titulo = f'Número de Creaciones con Países {", ".join(paises)} cada {year_range} años con formato: {", ".join(formatos_nombres)}'
                 
@@ -283,11 +320,12 @@ def grafico_barras_view(request):
     anio_inicio_str = request.GET.get('anio_inicio', '1930')
     anio_fin_str = request.GET.get('anio_fin', '2030')
     year_range_str = request.GET.get('year_range', '10')
+    query = request.GET.get('query')
     anos = range(1930, 2031, 10)
     # Convertir los valores a enteros
     anio_inicio = int(anio_inicio_str)
     anio_fin = int(anio_fin_str)
-    titulo, creaciones = get_creaciones(request, generos, formatos, paises, keyWords)
+    titulo, creaciones = get_creaciones(request, query, generos, formatos, paises, keyWords)
     # Lógica para generar el gráfico de barras
     # Por ejemplo, contar el número de creaciones por década
     decadas = range(anio_inicio, anio_fin, year_range)
@@ -572,9 +610,10 @@ def word_cloud(request):
     generos = request.GET.getlist('genero') if 'genero' in request.GET else []
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
     paises = request.GET.getlist('paises') if 'paises' in request.GET else []
-    _, creaciones = get_creaciones(request, generos, formatos, paises)
-    palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
+    query = request.GET.get('query')
 
+    _, creaciones = get_creaciones(request, query, generos, formatos, paises)
+    palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
     # Crear un contador de palabras clave
     word_counter = {}
     for palabra in palabras_clave:
