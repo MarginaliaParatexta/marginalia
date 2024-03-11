@@ -614,13 +614,16 @@ def word_cloud(request):
 
     _, creaciones = get_creaciones(request, query, generos, formatos, paises)
     palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
-    # Crear un contador de palabras clave
     word_counter = {}
-    for palabra in palabras_clave:
-        if palabra in word_counter:
-            word_counter[palabra] += 1
-        else:
-            word_counter[palabra] = 1
+
+    if len(palabras_clave) == 0:
+        word_counter['Nothing'] = 1
+    else:
+        for palabra in palabras_clave:
+            if palabra in word_counter:
+                word_counter[palabra] += 1
+            else:
+                word_counter[palabra] = 1
     word_counter = {key: value for key, value in word_counter.items() if key is not None}    # Crear el objeto WordCloud con la fuente TTF especificada
     wordcloud1 = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(word_counter)
 
