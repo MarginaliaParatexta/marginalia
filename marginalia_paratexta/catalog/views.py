@@ -417,22 +417,30 @@ def year_creations_list(request, year, year_range, filter1=None, filter2=None, f
 def world_map_view(request):
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
     keyWords = request.GET.getlist('keywords') if 'keywords' in request.GET else []
+    query = request.GET.get('query') 
     titulo1 = f'Número de Creaciones por país'
-
     if len(keyWords) > 0:
         creaciones = Creation.objects.all()
         consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keyWords]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            for consulta_q in consultas_q:
+                creaciones = creaciones.filter(consulta_q)
         titulo1 = f'Número de Creaciones por país con palabras clave: {", ".join(keyWords)}'
 
         if len(formatos) > 0:
             creaciones3 = Creation.objects.all()
             content_types = ContentType.objects.filter(model__in=formatos)
             consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones3 = creaciones3.filter(consulta_final).distinct()
-            creaciones = creaciones | creaciones3
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+            else:
+                consulta_final = reduce(or_, consultas_q)
+                creaciones = creaciones.filter(consulta_final).distinct()
             creaciones = creaciones.distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
             titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)}  años con palabras clave: {", ".join(keyWords)}'
@@ -441,8 +449,12 @@ def world_map_view(request):
         creaciones = Creation.objects.all()
         content_types = ContentType.objects.filter(model__in=formatos)
         consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            for consulta_q in consultas_q:
+                creaciones = creaciones.filter(consulta_q)
         formatos_nombres = [content_type.name for content_type in content_types]
         titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)}'
 
@@ -485,10 +497,11 @@ def world_map_view(request):
     fig = go.Figure(data=data, layout=layout)
     formatos_seleccionados = json.dumps(formatos)
     keywords_seleccionadas = json.dumps(keyWords)
+    query_for = json.dumps(query)
     # Convertir la figura a JSON para enviarla a la plantilla
     graph_json = fig.to_json()
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
-    return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave, 'formatos_seleccionados': formatos_seleccionados, 'keywords_seleccionadas': keywords_seleccionadas})
+    return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave, 'formatos_seleccionados': formatos_seleccionados, 'keywords_seleccionadas': keywords_seleccionadas, 'query_for': query_for})
 
 def country_creations_list(request, country_iso, formatos=None, keywords=None):
     # Filtrar las creaciones por país
