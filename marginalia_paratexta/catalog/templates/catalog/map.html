@@ -16,13 +16,18 @@
             <option value="comic">Cómic</option>
             <option value="novel">Novela</option>
         </select>
+        
         <select name="keywords" id="keywords" multiple>
             <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
             {% for keyword in palabras_clave %}
                 <option value="{{ keyword }}">{{ keyword }}</option>
             {% endfor %}
         </select>
-
+        <label for="query">Tipo Filtro:</label>
+        <select name="query" id="query">
+            <option value="OR" selected>OR</option>
+            <option value="AND">AND</option>
+        </select>
         <button type="submit">Filtrar</button>
     </form>
     <div id="world_map"></div>
@@ -32,25 +37,26 @@
         var graphJSON = JSON.parse('{{ graph_json | escapejs }}');
         var formatos = JSON.parse('{{ formatos_seleccionados | escapejs }}');
         var keyWords = JSON.parse('{{ keywords_seleccionadas | escapejs }}');
+        var query_for = JSON.parse('{{ query_for | escapejs }}');
         // Renderizar el mapa en el div 'world_map'
         Plotly.plot('world_map', graphJSON);
-
+        
         document.getElementById('world_map').on('plotly_click', function(data){
         // Verificar si el clic fue en un país
         if(data.points[0].location){
+            console.log(query_for)
             // Obtener el código ISO del país clicado
             var countryIso = data.points[0].location;
-            console.log(formatos)
             if (formatos.length === 0 && keyWords.length === 0){
-                window.location.href = `/catalog/country/${countryIso}/creations/`;
+                window.location.href = `/catalog/country/${countryIso}/creations/${query_for}/`;
             }
             else if(formatos.length > 0 && keyWords.length > 0) {
                 // Redirigir a la vista de detalles del país
-                window.location.href = `/catalog/country/${countryIso}/creations/${formatos.join(',')}/${keyWords.join(',')}/`;
+                window.location.href = `/catalog/country/${countryIso}/creations/${query_for}/${formatos.join(',')}/${keyWords.join(',')}/`;
             } else if(formatos.length > 0) {
-                window.location.href = `/catalog/country/${countryIso}/creations/formato/${formatos.join(',')}/`;
+                window.location.href = `/catalog/country/${countryIso}/creations/${query_for}/formato/${formatos.join(',')}/`;
             } else {
-                window.location.href = `/catalog/country/${countryIso}/creations/keyWord/${keyWords.join(',')}/`;
+                window.location.href = `/catalog/country/${countryIso}/creations/${query_for}/keyWord/${keyWords.join(',')}/`;
             }
         }
     });
