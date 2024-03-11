@@ -42,6 +42,11 @@
                 <option value="{{ anio }}" {% if anio == 2030 %} selected {% endif %}>{{ anio }}</option>
             {% endfor %}
         </select>
+        <label for="query">Tipo Filtro:</label>
+        <select name="query" id="query">
+            <option value="OR" selected>OR</option>
+            <option value="AND">AND</option>
+        </select>
         <button type="submit">Filtrar</button>
     </form>
 
