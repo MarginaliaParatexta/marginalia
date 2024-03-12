@@ -14,10 +14,9 @@ urlpatterns = [
     path('country/<str:country_iso>/creations/<str:query_for>/keyWord/<str:keyWords>/', views.country_creations_list_keyWord, name='country_creations_list_keyWord'),
     path('country/<str:country_iso>/creations/<str:query_for>/<str:formatos>/<str:keywords>/', views.country_creations_list, name='country_creations_list'),
     path('country/<str:country_iso>/creations/', views.country_creations_list, name='country_creations_list'),
-    path('year/<int:year>/<int:year_range>/creations/', views.year_creations_list, name='year_creations_list'),
-    path('year/<int:year>/<int:year_range>/creations/<str:filter1>/', views.year_creations_list, name='year_creations_list'),
-    path('year/<int:year>/<int:year_range>/creations/<str:filter1>/<str:filter2>/', views.year_creations_list, name='year_creations_list'),
-    path('year/<int:year>/<int:year_range>/creations/<str:filter1>/<str:filter2>/<str:filter3>/', views.year_creations_list, name='year_creations_list'),
-    path('year/<int:year>/<int:year_range>/creations/<str:filter1>/<str:filter2>/<str:filter3>/<str:filter4>/', views.year_creations_list, name='year_creations_list'),
-    
+    path('year/<int:year>/<int:year_range>/<str:query_for>/creations/', views.year_creations_list, name='year_creations_list'),
+    path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/', views.year_creations_list, name='year_creations_list'),
+    path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/', views.year_creations_list, name='year_creations_list'),
+    path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/<str:filter3>/', views.year_creations_list, name='year_creations_list'),
+    path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/<str:filter3>/<str:filter4>/', views.year_creations_list, name='year_creations_list'),
 ]
