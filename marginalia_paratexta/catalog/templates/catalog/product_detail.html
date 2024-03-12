@@ -169,7 +169,7 @@
             <p><strong>Productora: </strong>{{ product.creation.producer }}</p>
           {% endif %}
           {% if  product.creation.earnings %}
-            <p><strong>Taquilla: </strong>{{ product.creation.earnings }}</p>
+            <p><strong>Taquilla: </strong>{{ product.creation.earnings|urlizetrunc:8 }}</p>
           {% endif %}
           {% if  product.creation.cast %}
             <p><strong>Reparto: </strong>{{ product.creation.cast }}</p>
