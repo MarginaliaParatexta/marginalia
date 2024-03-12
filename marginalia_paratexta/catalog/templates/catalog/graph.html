@@ -92,11 +92,15 @@
                 var keyWords = JSON.parse('{{ keywords_seleccionados | escapejs }}');
                 var paises = JSON.parse('{{ paises_seleccionados | escapejs }}');
                 var generos = JSON.parse('{{ generos_seleccionados | escapejs }}');
+                var query_for = JSON.parse('{{ query_for|escapejs }}');
+                if (query_for === null){
+                    query_for = 'OR'
+                }
                 if (activeElements.length > 0) {
                     var index = activeElements[0].index;
                     var label = data.labels[index];
                     // Resto del código de redirección aquí
-                    var url = `/catalog/year/${label}/${year_range}/creations`
+                    var url = `/catalog/year/${label}/${year_range}/${query_for}/creations`
                     if (generos.length > 0) {
                         url = url + `/${generos.join(',')}`
                     }
