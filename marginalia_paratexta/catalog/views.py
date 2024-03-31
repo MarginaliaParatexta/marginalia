@@ -603,7 +603,7 @@ def world_map_view(request):
         locations=list(country_creations_count.keys()),
         z=list(country_creations_count.values()),
         locationmode='ISO-3',
-        colorscale='Viridis',
+        colorscale=[[0, 'rgb(200, 255, 200)'], [1, 'rgb(0, 100, 0)']],
         marker_line_color='black',
         marker_line_width=0.5,
     )]
