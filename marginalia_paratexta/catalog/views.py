@@ -726,3 +726,41 @@ def word_cloud(request):
     context = {'wordcloud_image': img_str, 'lista_de_generos': lista_de_generos, 'anos': anos, 'paises': lista_paises}
 
     return render(request, 'catalog/wordcloud.html', context)
+def correo_invalido(request):
+    return render(request, 'catalog/mail_invalid.html')
+
+def contraseña_enviada(request):
+    return render(request, 'catalog/password_sent.html')
+
+def recuperar_contraseña_form(request):
+    return render(request, 'catalog/reset_password_form.html')
+
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+import random
+import string
+def recuperar_contraseña(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+        if user:
+            # Generar una nueva contraseña aleatoria
+            nueva_contraseña = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+            # Actualizar la contraseña del usuario en la base de datos
+            user.set_password(nueva_contraseña)
+            user.save()
+            # Enviar la nueva contraseña por correo electrónico
+            send_mail(
+                'Recuperación de Contraseña',
+                f'Su nueva contraseña es: {nueva_contraseña}',
+                'from@example.com',
+                [email],
+                fail_silently=False,
+            )
+            return render(request, 'catalog/password_sent.html')
+        else:
+            return render(request, 'catalog/mail_invalid.html')
+    return render(request, 'catalog/reset_password_form.html')
