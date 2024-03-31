@@ -19,4 +19,8 @@ urlpatterns = [
     path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/', views.year_creations_list, name='year_creations_list'),
     path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/<str:filter3>/', views.year_creations_list, name='year_creations_list'),
     path('year/<int:year>/<int:year_range>/<str:query_for>/creations/<str:filter1>/<str:filter2>/<str:filter3>/<str:filter4>/', views.year_creations_list, name='year_creations_list'),
+    path('recuperar-contraseña/', views.recuperar_contraseña_form, name='recuperar_contraseña_form'),
+    path('recuperar-contraseña/procesar/', views.recuperar_contraseña, name='recuperar_contraseña'),
+    path('contraseña-enviada/', views.contraseña_enviada, name='contraseña_enviada'),
+    path('correo-invalido/', views.correo_invalido, name='correo_invalido'),
 ]
