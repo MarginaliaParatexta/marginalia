@@ -1,54 +1,104 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Word Cloud</h1>
+    <style>
+        .word-cloud-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
-    <form method="GET" action="{% url 'wordcloud' %}">
-        <label for="formato_ficha">Formato:</label>
-        <select name="formato_ficha" id="formato_ficha" multiple>
-            <option value="movie">Película</option>
-            <option value="tvserie">Serie de TV</option>
-            <option value="theatre">Obra de teatro</option>
-            <option value="musica">Música</option>
-            <option value="boardgame">Juego de mesa</option>
-            <option value="videogame">Videojuego</option>
-            <option value="comic">Cómic</option>
-            <option value="novel">Novela</option>
-        </select>
-        <label for="paises">Paises:</label>
-        <select name="paises" id="paises" multiple>
-            <!-- Opciones de pais obtenidas de tu base de datos o fijas -->
-            {% for pais in paises %}
-                <option value="{{ pais }}">{{ pais }}</option>
-            {% endfor %}
-        </select>
-        <label for="genero">Géneros:</label>
-        <select name="genero" id="genero" multiple>
-            <!-- Opciones de género obtenidas de tu base de datos o fijas -->
-            {% for genero in lista_de_generos %}
-                <option value="{{ genero }}">{{ genero }}</option>
-            {% endfor %}
-        </select>
-        <label for="anio_inicio">Año de inicio:</label>
-        <select name="anio_inicio" id="anio_inicio">
-            {% for anio in anos %}
-                <option value="{{ anio }}">{{ anio }}</option>
-            {% endfor %}
-        </select>
+        .word-cloud-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-        <label for="anio_fin">Año de fin:</label>
-        <select name="anio_fin" id="anio_fin">
-            {% for anio in anos %}
-                <option value="{{ anio }}" {% if anio == 2030 %} selected {% endif %}>{{ anio }}</option>
-            {% endfor %}
-        </select>
-        <label for="query">Tipo Filtro:</label>
-        <select name="query" id="query">
-            <option value="OR" selected>OR</option>
-            <option value="AND">AND</option>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
+        .word-cloud-form {
+            margin-bottom: 20px;
+        }
 
-    <img src="data:image/png;base64,{{ wordcloud_image }}" alt="Word Cloud">
+        .word-cloud-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .word-cloud-form select,
+        .word-cloud-form button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .word-cloud-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+
+    <div class="word-cloud-container">
+        <h1>Nube de palabras</h1>
+
+        <form class="word-cloud-form" method="GET" action="{% url 'wordcloud' %}">
+            <label for="formato_ficha">Formato:</label>
+            <select name="formato_ficha" id="formato_ficha" multiple>
+                <option value="movie">Película</option>
+                <option value="tvserie">Serie de TV</option>
+                <option value="theatre">Obra de teatro</option>
+                <option value="musica">Música</option>
+                <option value="boardgame">Juego de mesa</option>
+                <option value="videogame">Videojuego</option>
+                <option value="comic">Cómic</option>
+                <option value="novel">Novela</option>
+            </select>
+
+            <label for="paises">Países:</label>
+            <select name="paises" id="paises" multiple>
+                <!-- Opciones de país obtenidas de tu base de datos o fijas -->
+                {% for pais in paises %}
+                    <option value="{{ pais }}">{{ pais }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="genero">Géneros:</label>
+            <select name="genero" id="genero" multiple>
+                <!-- Opciones de género obtenidas de tu base de datos o fijas -->
+                {% for genero in lista_de_generos %}
+                    <option value="{{ genero }}">{{ genero }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="anio_inicio">Año de inicio:</label>
+            <select name="anio_inicio" id="anio_inicio">
+                {% for anio in anos %}
+                    <option value="{{ anio }}">{{ anio }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="anio_fin">Año de fin:</label>
+            <select name="anio_fin" id="anio_fin">
+                {% for anio in anos %}
+                    <option value="{{ anio }}" {% if anio == 2030 %} selected {% endif %}>{{ anio }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="query">Tipo Filtro:</label>
+            <select name="query" id="query">
+                <option value="OR" selected>OR</option>
+                <option value="AND">AND</option>
+            </select>
+
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <img class="word-cloud-image" src="data:image/png;base64,{{ wordcloud_image }}" alt="Word Cloud">
+    </div>
 {% endblock %}
