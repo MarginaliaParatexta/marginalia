@@ -20,6 +20,21 @@
         .content-wrapper.initial {
             margin-top: 60px; /* Establece el margen superior inicialmente en 0 */
         }
+
+        /* Alinea los elementos de inicio de sesión y cierre de sesión en el centro cuando el menú está colapsado */
+        @media (max-width: 1000px) {
+            .navbar-center {
+                text-align: center;
+            }
+            .navbar-center .nav li {
+                display: inline-block;
+            }
+        }
+        @media (min-width: 1000px) {
+            .navbar-center {
+              float: right;
+            }
+        }
     </style>
 </head>
 <body>
@@ -54,6 +69,22 @@
                       <a href="{% url 'wordcloud' %}">Nube de palabras</a>
                     </li>
                 </ul>
+                <div class="navbar-center"> <!-- Envuelve los elementos en un contenedor centrado -->
+                    <ul class="nav navbar-nav"> <!-- Alinea los elementos a la derecha -->
+                        {% if user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'logout' %}" class="navbar-link">Logout</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{% url 'login' %}" class="navbar-link">Login</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'signup' %}" class="navbar-link">Sign Up</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div><!-- collapse nav-->
         </div><!-- container -->
 
