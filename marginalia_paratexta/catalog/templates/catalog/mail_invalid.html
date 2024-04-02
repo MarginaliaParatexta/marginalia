@@ -1,6 +1,27 @@
 {% block content %}
+    <style>
+        .invalid-email-message {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
-<h1>Correo Inválido</h1>
-<p>No se ha encontrado ninguna cuenta asociada a esta dirección de correo electrónico.</p>
+        .invalid-email-message h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
+        .invalid-email-message p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+    <div class="invalid-email-message">
+        <h1>Correo Inválido</h1>
+        <p>No se ha encontrado ninguna cuenta asociada a esta dirección de correo electrónico.</p>
+    </div>
 {% endblock %}
