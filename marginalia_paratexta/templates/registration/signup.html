@@ -1,28 +1,161 @@
 {% block content %}
-    <h2>Registrarse</h2>
-    <form method="post" action="{% url 'signup' %}">
-        {% csrf_token %}
+    <style>
+        .register-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
 
-        {{ form.username.label_tag }} {{ form.username }}
-        {{ form.email.label_tag }} {{ form.email }}
-        {{ form.password1.label_tag }} {{ form.password1 }}
-        {{ form.password2.label_tag }} {{ form.password2 }}
+        .register-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-        <button type="submit">Registrarse</button>
-        {% for error in form.username.errors %}
-            <div class="error">{{ error }}</div>
-        {% endfor %}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-        {% for error in form.email.errors %}
-            <div class="error">{{ error }}</div>
-        {% endfor %}
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
 
-        {% for error in form.password1.errors %}
-            <div class="error">{{ error }}</div>
-        {% endfor %}
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-        {% for error in form.password2.errors %}
-            <div class="error">{{ error }}</div>
-        {% endfor %}
-    </form>
+        .password-strength {
+            margin-bottom: 10px;
+        }
+
+        .password-strength-meter {
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .password-strength-label {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <div class="register-form">
+        <h2>Registrarse</h2>
+        <form method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Usuario</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Correo electrónico</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Contraseña</label>
+                {{ form.password1 }}
+                <div class="password-strength">
+                    <div class="password-strength-meter">
+                        <div class="password-strength-bar" id="password-strength-bar"></div>
+                    </div>
+                    <div class="password-strength-label" id="password-strength-label"></div>
+                </div>
+                {% for error in form.password1.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirmar contraseña</label>
+                {{ form.password2 }}
+                {% for error in form.password2.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </form>
+    </div>
+    <script>
+        // Función para calcular la fuerza de la contraseña
+        function checkPasswordStrength() {
+            var password = document.getElementById('id_password1').value;
+            var progressBar = document.getElementById('password-strength-bar');
+            var strengthLabel = document.getElementById('password-strength-label');
+
+            var strength = 0;
+            if (password.match(/[a-z]+/)) {
+                strength += 1;
+            }
+            if (password.match(/[A-Z]+/)) {
+                strength += 1;
+            }
+            if (password.match(/[0-9]+/)) {
+                strength += 1;
+            }
+            if (password.length >= 8) {
+                strength += 1;
+            }
+
+            var progressBarColor = '';
+            if (strength === 1) {
+                progressBarColor = 'red';
+                strengthLabel.innerHTML = 'Débil';
+            } else if (strength === 2) {
+                progressBarColor = 'yellow';
+                strengthLabel.innerHTML = 'Moderada';
+            } else if (strength === 3) {
+                progressBarColor = 'lightgreen';
+                strengthLabel.innerHTML = 'Fuerte';
+            } else {
+                progressBarColor = 'darkgreen';
+                strengthLabel.innerHTML = 'Muy fuerte';
+            }
+
+            progressBar.style.width = (strength * 25) + '%';
+            progressBar.style.backgroundColor = progressBarColor;
+        }
+
+        // Ejecutar la función al escribir en el campo de contraseña
+        document.getElementById('id_password1').addEventListener('input', checkPasswordStrength);
+    </script>
 {% endblock %}
