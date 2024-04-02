@@ -1,5 +1,34 @@
 {% block content %}
-    <p>Logged out!</p>  
+    <style>
+        .logged-out-message {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
-    <a href="{% url 'index'%}">Click here to go Home.</a>
+        .logged-out-message p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <div class="logged-out-message">
+        <p>¡Has cerrado sesión correctamente!</p>
+        <a href="{% url 'index'%}" class="home-link">Haz clic aquí para ir a la página de inicio.</a>
+    </div>
 {% endblock %}
