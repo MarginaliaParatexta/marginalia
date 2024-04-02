@@ -699,10 +699,17 @@ def word_cloud(request):
     generos = request.GET.getlist('genero') if 'genero' in request.GET else []
     formatos = request.GET.getlist('formato_ficha') if 'formato_ficha' in request.GET else []
     paises = request.GET.getlist('paises') if 'paises' in request.GET else []
+    anio_inicio_str = request.GET.get('anio_inicio', '1930')
+    anio_fin_str = request.GET.get('anio_fin', '2030')
+    anio_inicio = int(anio_inicio_str)
+    anio_fin = int(anio_fin_str)
     query = request.GET.get('query')
 
     _, creaciones = get_creaciones(request, query, generos, formatos, paises)
+
+    creaciones = creaciones.filter(publication_year__range=(anio_inicio, anio_fin)).distinct()
     palabras_clave = creaciones.values_list('palabras_clave__name', flat=True)
+    
     word_counter = {}
 
     if len(palabras_clave) == 0:
@@ -726,6 +733,7 @@ def word_cloud(request):
     context = {'wordcloud_image': img_str, 'lista_de_generos': lista_de_generos, 'anos': anos, 'paises': lista_paises}
 
     return render(request, 'catalog/wordcloud.html', context)
+    
 def correo_invalido(request):
     return render(request, 'catalog/mail_invalid.html')
 
