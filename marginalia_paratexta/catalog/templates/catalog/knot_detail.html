@@ -1,13 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ knot.info }}</h1>
-    <ul>
+    <style>
+        /* Estilos por clases */
+        .content-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .content-list {
+            list-style-type: none;
+            padding-left: 20px; /* Margen a la izquierda */
+        }
+
+        .content-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc; /* Línea divisoria entre elementos de la lista */
+            padding-bottom: 5px; /* Espaciado inferior */
+        }
+
+        .content-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .content-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <h1 class="content-title">{{ knot.info }}</h1>
+    <ul class="content-list">
         {% for producto in knot.productos.all %}
-            <li>
-                <a href="{% url 'creation-detail' pk=producto.id %}">{{ producto.title }}</a>
+            <li class="content-item">
+                <a class="content-link" href="{% url 'creation-detail' pk=producto.id %}">{{ producto.title }}</a>
             </li>
         {% endfor %}
     </ul>
-  
 {% endblock %}
