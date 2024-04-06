@@ -1,9 +1,39 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <h2>{{ titulo }}</h2>
-    <ul>
-    {% for creation in creations %}
-    <li><a href="{% url 'creation-detail' pk=creation.product.id %}">{{ creation.product.title }}</a></li> <!-- Ajusta esto según tu modelo de creación -->
-    {% endfor %}
+    <style>
+        /* Estilos por clases */
+        .content-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .content-list {
+            list-style-type: none;
+            padding-left: 20px; /* Margen a la izquierda */
+        }
+
+        .content-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc; /* Línea divisoria entre elementos de la lista */
+            padding-bottom: 5px; /* Espaciado inferior */
+        }
+
+        .content-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .content-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <h2 class="content-title">{{ titulo }}</h2>
+    <ul class="content-list">
+        {% for creation in creations %}
+            <li class="content-item"><a class="content-link" href="{% url 'creation-detail' pk=creation.product.id %}">{{ creation.product.title }}</a></li>
+        {% endfor %}
     </ul>
 {% endblock %}
