@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Dynamic content</h2>
-  <p>The library has the following record counts:</p>
-  <ul>
-    <li><strong>Creations:</strong> {{ num_products }}</li>
 
-  </ul>
+  <h1 style="text-align: center;">MARGINALIA PARATEXTA</h1>
+  <div style="text-align: center;">
+    {% load static %}
+    <img src="{% static 'imagenes/marginaliaportada.jpg' %}" alt="Mi Imagen" style="width: 70%; height: 70%;">
+    <p style="font-size: 8px;">Imagen de propiedad de <a href="https://matthewquick.com.au/" target="_blank">Matthew Quick</a></p>
+
+  </div>
 {% endblock %}
