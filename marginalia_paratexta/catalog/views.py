@@ -557,10 +557,16 @@ def world_map_view(request):
                 creaciones = creaciones.filter(consulta_q)
         titulo1 = f'Número de Creaciones por país con palabras clave: {", ".join(keyWords)}'
         if len(formatos) > 0:
+            creaciones3 = Creation.objects.all()
             content_types = ContentType.objects.filter(model__in=formatos)
             consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones = creaciones.filter(consulta_final).distinct()
+            if query == 'OR':
+                consulta_final = reduce(or_, consultas_q)
+                creaciones3 = creaciones3.filter(consulta_final).distinct()
+                creaciones = creaciones | creaciones3
+            else:
+                consulta_final = reduce(or_, consultas_q)
+                creaciones = creaciones.filter(consulta_final).distinct()
             creaciones = creaciones.distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
             titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)} y palabras clave: {", ".join(keyWords)}'
@@ -568,8 +574,12 @@ def world_map_view(request):
         creaciones = Creation.objects.all()
         content_types = ContentType.objects.filter(model__in=formatos)
         consultas_q = [Q(polymorphic_ctype=content_type) for content_type in content_types]
-        consulta_final = reduce(or_, consultas_q)
-        creaciones = creaciones.filter(consulta_final).distinct()
+        if query == 'OR':
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
+        else:
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
         formatos_nombres = [content_type.name for content_type in content_types]
         titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)}'
 
@@ -629,9 +639,7 @@ def country_creations_list(request, country_iso, query_for=None, formatos=None, 
         creaciones = Creation.objects.all()
         if query_for == 'OR':
             consultas_q = [Q(palabras_clave__name=keyWord) for keyWord in keywords_list]
-            consulta_final = reduce(or_, consultas_q)
-            creaciones = creaciones.filter(consulta_final).distinct()
-            consultas_q = ([Q(polymorphic_ctype=content_type) for content_type in content_types])
+            consultas_q.extend([Q(polymorphic_ctype=content_type) for content_type in content_types])
             consulta_final = reduce(or_, consultas_q)
             creaciones = creaciones.filter(consulta_final).distinct()
         else:
@@ -648,7 +656,6 @@ def country_creations_list(request, country_iso, query_for=None, formatos=None, 
     creations = creaciones.filter(paises__iso_code=country_iso)
     # Aplicar los filtros
     return render(request, 'catalog/country_creations_list.html', {'creations': creations, 'titulo': titulo})
-
 def country_creations_list_formato(request, country_iso, formatos=None):
     # Filtrar las creaciones por país
     formatos_list = formatos.split(',') if formatos else []
