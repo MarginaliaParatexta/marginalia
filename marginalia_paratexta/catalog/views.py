@@ -580,8 +580,8 @@ def world_map_view(request):
             consulta_final = reduce(or_, consultas_q)
             creaciones = creaciones.filter(consulta_final).distinct()
         else:
-            for consulta_q in consultas_q:
-                creaciones = creaciones.filter(consulta_q)
+            consulta_final = reduce(or_, consultas_q)
+            creaciones = creaciones.filter(consulta_final).distinct()
         formatos_nombres = [content_type.name for content_type in content_types]
         titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)}'
 
