@@ -1,29 +1,134 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-  <form method="get" action="{% url 'creations' %}">
-    {{ filter.form.as_p }}
-    
-    <button type="submit">Filter</button>
-    <a href="?">Resetear filtros</a>
-  </form>
-  <h4>Productos que cumplen todas las condiciones:</h4>
-  <ul>
-    {% for product in all_conditions %}
-      <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
-    {% empty %}
-      <li>No se encontraron productos que cumplan todas las condiciones.</li>
-    {% endfor %}
-  </ul>
-  
-  <!-- Mostrar productos que cumplen al menos una de las condiciones -->
-  {% if any_condition %}
-    <h4>Productos que cumplen al menos una de las condiciones de género y palabra clave:</h4>
+  <style>
+    .filter-form {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+
+    .filter-form label {
+      display: block;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .filter-form select,
+    .filter-form input[type="text"] {
+      width: calc(100% - 22px);
+      margin: 0 auto;
+    }
+
+    /* Ajusta la altura de los campos select múltiples */
+    .filter-form select[multiple] {
+      height: 100px; /* Ajusta la altura según sea necesario */
+    }
+
+    .filter-form .button-group {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .filter-form .btn-filter,
+    .filter-form .btn-reset {
+      padding: 10px 20px;
+      margin-right: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .filtered-products {
+      max-width: 900px;
+      margin: 20px auto;
+    }
+
+    .filtered-products h4 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .filtered-products ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .filtered-products li {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    .filtered-products li:last-child {
+      border-bottom: none;
+    }
+
+    .filtered-products a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .filtered-products a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <div class="filter-form">
+    <form method="get" action="{% url 'creations' %}">
+      <label for="id_title">Título</label>
+      {{ filter.form.title }}
+      
+
+      <label for="id_palabras_clave">Palabras Clave</label>
+      {{ filter.form.palabras_clave }}
+
+      <label for="id_genero">Género</label>
+      {{ filter.form.genero }}
+
+      <label for="id_paises">Países Relacionados</label>
+      {{ filter.form.paises }}
+
+      <label for="id_creation_type">Tipo de Creación</label>
+      {{ filter.form.creation_type }}
+
+      <label for="id_publication_year_range_0">Rango de años de publicación</label>
+      {{ filter.form.publication_year_range }}
+
+      <label for="id_text_search">Buscar en todos los campos</label>
+      {{ filter.form.text_search }}
+
+
+      <div class="button-group">
+        <button type="submit" class="btn-filter">Filtrar</button>
+        <a href="?" class="btn-reset">Resetear filtros</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="filtered-products">
+    <h4>Productos que cumplen todas las condiciones:</h4>
     <ul>
-      {% for product in any_condition %}
+      {% for product in all_conditions %}
         <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
+      {% empty %}
+        <li>No se encontraron productos que cumplan todas las condiciones.</li>
       {% endfor %}
     </ul>
-  {% endif %}
-  
+
+    {% if any_condition %}
+      <h4>Productos que cumplen al menos una de las condiciones de género y palabra clave:</h4>
+      <ul>
+        {% for product in any_condition %}
+          <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
 {% endblock %}
