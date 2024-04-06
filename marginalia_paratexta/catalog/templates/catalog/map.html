@@ -2,34 +2,85 @@
 
 {% block content %}
     <!-- Div para el mapa -->
+    <style>
+        .map-filters-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
-    <form method="GET" action="{% url 'map' %}">
-        <label for="keywords">Palabras Clave:</label>
-        <label for="formato_ficha">Formato:</label>
-        <select name="formato_ficha" id="formato_ficha" multiple>
-            <option value="movie">Película</option>
-            <option value="tvserie">Serie de TV</option>
-            <option value="theatre">Obra de teatro</option>
-            <option value="musica">Música</option>
-            <option value="boardgame">Juego de mesa</option>
-            <option value="videogame">Videojuego</option>
-            <option value="comic">Cómic</option>
-            <option value="novel">Novela</option>
-        </select>
+        .map-filters-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .map-filters-form {
+            margin-bottom: 20px;
+        }
+
+        .map-filters-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .map-filters-form select,
+        .map-filters-form button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #world_map {
+            width: 600px; /* Ancho deseado */
+            height: 400px; /* Alto deseado */
+            margin: 0 auto; /* Esto centra el div horizontalmente */
+            /* Puedes añadir más estilos según sea necesario */
+        }
+    </style>
+
+    <div class="map-filters-container">
+        <h1>Filtros para el mapa</h1>
+
+        <form class="map-filters-form" method="GET" action="{% url 'map' %}">
+            <label for="formato_ficha">Formato:</label>
+            <select name="formato_ficha" id="formato_ficha" multiple>
+                <option value="movie">Película</option>
+                <option value="tvserie">Serie de TV</option>
+                <option value="theatre">Obra de teatro</option>
+                <option value="musica">Música</option>
+                <option value="boardgame">Juego de mesa</option>
+                <option value="videogame">Videojuego</option>
+                <option value="comic">Cómic</option>
+                <option value="novel">Novela</option>
+            </select>
+
+            <label for="keywords">Palabras Clave:</label>
+            <select name="keywords" id="keywords" multiple>
+                <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
+                {% for keyword in palabras_clave %}
+                    <option value="{{ keyword }}">{{ keyword }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="query">Tipo Filtro:</label>
+            <select name="query" id="query">
+                <option value="OR" selected>OR</option>
+                <option value="AND">AND</option>
+            </select>
+
+            <button type="submit">Filtrar</button>
+        </form>
+        <h4>{{ title }}</h4>
         
-        <select name="keywords" id="keywords" multiple>
-            <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
-            {% for keyword in palabras_clave %}
-                <option value="{{ keyword }}">{{ keyword }}</option>
-            {% endfor %}
-        </select>
-        <label for="query">Tipo Filtro:</label>
-        <select name="query" id="query">
-            <option value="OR" selected>OR</option>
-            <option value="AND">AND</option>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
+    </div>
     <div id="world_map"></div>
     <script>
         // Cargar el mapa desde el JSON generado en la vista
