@@ -570,7 +570,7 @@ def world_map_view(request):
                 creaciones = creaciones.filter(consulta_final).distinct()
             creaciones = creaciones.distinct()
             formatos_nombres = [content_type.name for content_type in content_types]
-            titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)}  años con palabras clave: {", ".join(keyWords)}'
+            titulo1 = f'Número de Creaciones por país con formato: {", ".join(formatos_nombres)} y palabras clave: {", ".join(keyWords)}'
 
     elif len(formatos) > 0:
         creaciones = Creation.objects.all()
@@ -610,14 +610,13 @@ def world_map_view(request):
 
     # Crear el diseño del mapa
     layout = go.Layout(
-        title=titulo1,
         geo=dict(
             showframe=False,
             showcoastlines=True,
             projection_type='equirectangular'
         ),
-        width=1000,  # Ancho del mapa en píxeles
-        height=600,  # Alto del mapa en píxeles
+        width=600,  # Ancho del mapa en píxeles
+        height=400,  # Alto del mapa en píxeles
     )
 
     # Crear la figura del mapa
@@ -628,7 +627,7 @@ def world_map_view(request):
     # Convertir la figura a JSON para enviarla a la plantilla
     graph_json = fig.to_json()
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
-    return render(request, 'catalog/map.html', {'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave, 'formatos_seleccionados': formatos_seleccionados, 'keywords_seleccionadas': keywords_seleccionadas, 'query_for': query_for})
+    return render(request, 'catalog/map.html', {'title': titulo1, 'graph_json': graph_json, 'palabras_clave': lista_de_palabras_clave, 'formatos_seleccionados': formatos_seleccionados, 'keywords_seleccionadas': keywords_seleccionadas, 'query_for': query_for})
 
 def country_creations_list(request, country_iso, query_for=None, formatos=None, keywords=None):
     # Filtrar las creaciones por país
