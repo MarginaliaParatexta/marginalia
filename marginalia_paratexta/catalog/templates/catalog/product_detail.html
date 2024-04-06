@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<style>
+  h5 {
+    font-weight: bold;
+}
+body {
+  margin-left: 5%;
+}
+</style>
+
+
+
 <h1>{{ product.title }}</h1>
 
 <!-- Nodos y fichas relacionadas-->
@@ -574,6 +586,7 @@
         </div>
         {% for declaration in product.product_metatext.metatext_declarations.all %}
           <ul>
+            <li>
             <p>{{ declaration.description|default:"" }}</p>
             {% if declaration.link %}
               <a href="{{ declaration.link }}" target="_blank">Enlace a la declaración</a>
@@ -581,6 +594,7 @@
             {% if declaration.details %}
               <p>Detalles: {{ declaration.details }}</p>
             {% endif %}
+          </li>
           </ul>
         {% endfor %}
       {% endif %}
@@ -591,6 +605,7 @@
         </div>
         {% for criticism in product.product_metatext.metatext_criticism.all %}
           <ul>
+            <li>
             <p>{{ criticism.description|default:"" }}</p>
             {% if criticism.link %}
               <a href="{{ criticism.link }}" target="_blank">Enlace a la crítica</a>
@@ -598,6 +613,7 @@
             {% if criticism.details %}
               <p>Detalles: {{ criticism.details }}</p>
             {% endif %}
+          </li>
           </ul>
         {% endfor %}
       {% endif %}
@@ -608,6 +624,7 @@
         </div>
         {% for press_article in product.product_metatext.metatext_press_article.all %}
           <ul>
+            <li>
             <p>{{ press_article.description|default:"" }}</p>
             {% if press_article.link %}
               <a href="{{ press_article.link }}" target="_blank">Enlace al artículo</a>
@@ -615,6 +632,7 @@
             {% if press_article.details %}
               <p>Detalles: {{ press_article.details }}</p>
             {% endif %}
+          </li>
           </ul>
         {% endfor %}
       {% endif %}
