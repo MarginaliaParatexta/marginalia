@@ -1,68 +1,122 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ titulo }}</h1>
+    <style>
+        /* Estilos por clases */
+        .filter-form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
 
-    <!-- Formulario de filtrado por género -->
-    <form method="GET" action="{% url 'graph' %}">
-        <label for="formato_ficha">Formato:</label>
-        <select name="formato_ficha" id="formato_ficha" multiple>
-            <option value="movie">Película</option>
-            <option value="tvserie">Serie de TV</option>
-            <option value="theatre">Obra de teatro</option>
-            <option value="musica">Música</option>
-            <option value="boardgame">Juego de mesa</option>
-            <option value="videogame">Videojuego</option>
-            <option value="comic">Cómic</option>
-            <option value="novel">Novela</option>
-        </select>
-        <label for="paises">Paises:</label>
-        <select name="paises" id="paises" multiple>
-            <!-- Opciones de pais obtenidas de tu base de datos o fijas -->
-            {% for pais in paises %}
-                <option value="{{ pais }}">{{ pais }}</option>
-            {% endfor %}
-        </select>
-        <label for="genero">Géneros:</label>
-        <select name="genero" id="genero" multiple>
-            <!-- Opciones de género obtenidas de tu base de datos o fijas -->
-            {% for genero in lista_de_generos %}
-                <option value="{{ genero }}">{{ genero }}</option>
-            {% endfor %}
-        </select>
-        <label for="keywords">Palabras Clave:</label>
-        <select name="keywords" id="keywords" multiple>
-            <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
-            {% for keyword in palabras_clave %}
-                <option value="{{ keyword }}">{{ keyword }}</option>
-            {% endfor %}
-        </select>
-        <label for="anio_inicio">Año de inicio:</label>
-        <select name="anio_inicio" id="anio_inicio">
-            {% for anio in anos %}
-                <option value="{{ anio }}">{{ anio }}</option>
-            {% endfor %}
-        </select>
+        .filter-form h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-        <label for="anio_fin">Año de fin:</label>
-        <select name="anio_fin" id="anio_fin">
-            {% for anio in anos %}
-                <option value="{{ anio }}" {% if anio == 2030 %} selected {% endif %}>{{ anio }}</option>
-            {% endfor %}
-        </select>
-        <label for="year_range">Creaciones cada:</label>
-        <select name="year_range" id="year_range" class="select2">
-            {% for anio in rango_anos %}
-                <option value="{{ anio }}">{{ anio }}</option>
-            {% endfor %}
-        </select>
-        <label for="query">Tipo Filtro:</label>
-        <select name="query" id="query">
-            <option value="OR" selected>OR</option>
-            <option value="AND">AND</option>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
+        .filter-form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .filter-form select,
+        .filter-form button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #grafico {
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        @media only screen and (min-width: 768px) {
+            #grafico {
+                width: 100%; /* O cualquier otro valor deseado */
+                height: 400px; /* O cualquier otro valor deseado */
+                margin: 20px auto;
+                display: block;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+        }
+    </style>
+
+    <div class="filter-form">
+        <h2>{{ titulo }}</h2>
+
+        <!-- Formulario de filtrado por género -->
+        <form class="form" method="GET" action="{% url 'graph' %}">
+            <label for="formato_ficha">Formato:</label>
+            <select name="formato_ficha" id="formato_ficha" multiple>
+                <option value="movie">Película</option>
+                <option value="tvserie">Serie de TV</option>
+                <option value="theatre">Obra de teatro</option>
+                <option value="musica">Música</option>
+                <option value="boardgame">Juego de mesa</option>
+                <option value="videogame">Videojuego</option>
+                <option value="comic">Cómic</option>
+                <option value="novel">Novela</option>
+            </select>
+            <label for="paises">Paises:</label>
+            <select name="paises" id="paises" multiple>
+                <!-- Opciones de pais obtenidas de tu base de datos o fijas -->
+                {% for pais in paises %}
+                    <option value="{{ pais }}">{{ pais }}</option>
+                {% endfor %}
+            </select>
+            <label for="genero">Géneros:</label>
+            <select name="genero" id="genero" multiple>
+                <!-- Opciones de género obtenidas de tu base de datos o fijas -->
+                {% for genero in lista_de_generos %}
+                    <option value="{{ genero }}">{{ genero }}</option>
+                {% endfor %}
+            </select>
+            <label for="keywords">Palabras Clave:</label>
+            <select name="keywords" id="keywords" multiple>
+                <!-- Opciones de keywords obtenidas de tu base de datos o fijas -->
+                {% for keyword in palabras_clave %}
+                    <option value="{{ keyword }}">{{ keyword }}</option>
+                {% endfor %}
+            </select>
+            <label for="anio_inicio">Año de inicio:</label>
+            <select name="anio_inicio" id="anio_inicio">
+                {% for anio in anos %}
+                    <option value="{{ anio }}">{{ anio }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="anio_fin">Año de fin:</label>
+            <select name="anio_fin" id="anio_fin">
+                {% for anio in anos %}
+                    <option value="{{ anio }}" {% if anio == 2030 %} selected {% endif %}>{{ anio }}</option>
+                {% endfor %}
+            </select>
+            <label for="year_range">Creaciones cada:</label>
+            <select name="year_range" id="year_range" class="select2">
+                {% for anio in rango_anos %}
+                    <option value="{{ anio }}">{{ anio }}</option>
+                {% endfor %}
+            </select>
+            <label for="query">Tipo Filtro:</label>
+            <select name="query" id="query">
+                <option value="OR" selected>OR</option>
+                <option value="AND">AND</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
 
     <!-- Mostrar el gráfico de barras -->
     <canvas id="grafico"></canvas>
@@ -118,6 +172,4 @@
             };
         };
     </script>
-
-
 {% endblock %}
