@@ -37,7 +37,7 @@
     @media screen and (max-width: 700px) {
 
       .filtered-products{
-          margin-left: 10%
+          margin-left: 20px
         }
       .filter-form select[multiple] {
         height: auto; /* Establece la altura automática */
@@ -45,7 +45,12 @@
         overflow-y: auto; /* Agrega un scroll vertical si es necesario */
       }
     }
+    @media screen and (min-width: 700px) {
 
+      .filtered-products{
+        margin-left: 25%;
+        }
+    }
 
     .filter-form .btn-filter,
     .filter-form .btn-reset {
@@ -61,7 +66,6 @@
 
     .filtered-products {
       max-width: 900px;
-      margin: 20px;
     }
 
     .filtered-products h4 {
