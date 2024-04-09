@@ -2,6 +2,7 @@
 
 {% block content %}
   <style>
+
     .filter-form {
       max-width: 900px;
       margin: 20px auto;
@@ -33,6 +34,19 @@
       text-align: center;
     }
 
+    @media screen and (max-width: 700px) {
+
+      .filtered-products{
+          margin-left: 10%
+        }
+      .filter-form select[multiple] {
+        height: auto; /* Establece la altura automática */
+        height: 40px; /* Establece una altura máxima */
+        overflow-y: auto; /* Agrega un scroll vertical si es necesario */
+      }
+    }
+
+
     .filter-form .btn-filter,
     .filter-form .btn-reset {
       padding: 10px 20px;
@@ -47,7 +61,7 @@
 
     .filtered-products {
       max-width: 900px;
-      margin: 20px auto;
+      margin: 20px;
     }
 
     .filtered-products h4 {
@@ -69,6 +83,8 @@
     .filtered-products li:last-child {
       border-bottom: none;
     }
+
+
 
     .filtered-products a {
       color: #007bff;
@@ -126,7 +142,7 @@
       <h4>Productos que cumplen al menos una de las condiciones de género y palabra clave:</h4>
       <ul>
         {% for product in any_condition %}
-          <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
+          <li><a class="item" href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
         {% endfor %}
       </ul>
     {% endif %}
