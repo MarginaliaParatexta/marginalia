@@ -1,12 +1,23 @@
-{% extends "base.html" %}
-
 {% block content %}
 
-  <h1 style="text-align: center;">MARGINALIA PARATEXTA</h1>
   <div style="text-align: center;">
-    {% load static %}
-    <img src="{% static 'imagenes/marginaliaportada.jpg' %}" alt="Mi Imagen" style="width: 70%; height: 70%;">
-    <p style="font-size: 8px;">Imagen de propiedad de <a href="https://matthewquick.com.au/" target="_blank">Matthew Quick</a></p>
+    <h1 style="font-size: 2.5em; color: #333; margin-bottom: 20px;">MARGINALIA PARATEXTA</h1>
+    <p style="font-size: 1.1em; line-height: 1.5; color: #666;">Marginalia Paratexta es una base de datos que recoge paratextos y metatextos de la Recepción Clásica en la cultura de masas contemporánea. Además de ofrecer informaciones detalladas de productos culturales en distintos formatos (cine, televisión, música, videojuegos, novela, juegos de mesa, etc.), proporciona un abanico de búsquedas miradas altamente informativas, tanto por ejes temáticos, temporales y geográficos, como por conceptos relevantes. </p>
+    {% load static%}
+    <p style="font-size: 1.1em; line-height: 1.5; color: #666;">Para más detalles sobre cómo utilizar la base, pincha <a href="https://www.linkedin.com/in/david-almeda-garcia-3264191ab" target="_blank" style="color: #007bff; text-decoration: none;">aquí</a>.</p>
+    <img src="{% static 'imagenes/marginaliaportada.jpg' %}" alt="Marginalia Paratexta" style="width: 70%; max-width: 800px; height: auto; margin: 30px auto; display: block; border-radius: 10px; box-shadow: 0px 0px 20px rgba(0,0,0,0.1);">
+    
+    <p style="font-size: 0.8em; color: #999;">Imagen de propiedad de <a href="https://matthewquick.com.au/" target="_blank" style="color: #999; text-decoration: none;">Matthew Quick</a></p>
+    
+    <div style="margin-top: 30px;">
+      <p style="font-size: 1.1em; color: #333; margin-bottom: 10px;">Grupo de Investigación "Marginalia Classica"</p>
+      <p style="font-size: 0.9em; color: #666;">Proyecto de Investigación "Marginalia Classica: Recepción Clásica y Cultura de Masas Contemporánea. La Construcción de Identidades y Alteridades" (PID2019-107253GB-100). IP: Luis Unceta Gómez. Financiado por el Ministerio de Ciencia, Innovación y Universidades.</p>
+      <img src="{% static 'imagenes/logo.png' %}" alt="Logo Proyecto" style="width: 30%; max-width: 200px; height: auto; margin-right: 20px;">
+      <img src="{% static 'imagenes/logouam.png' %}" alt="Logo UAM" style="width: 30%; max-width: 200px; height: auto;">
+    </div>
 
+    <p style="font-size: 0.9em; color: #666; margin-top: 20px;">Proyecto beneficiario de un contrato de Ayudante de Investigación por parte del Programa Operativo de Empleo Juvenil (YEI) de la Comunidad de Madrid.</p>
+    <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">Diseño informático de <a href="https://www.linkedin.com/in/david-almeda-garcia-3264191ab" target="_blank" style="color: #007bff; text-decoration: none;">David Almeda García</a></p>
   </div>
+
 {% endblock %}
