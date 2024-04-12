@@ -501,7 +501,9 @@ body {
           {% for cover in product.product_paratext.paratext_cover.all %}
             <ul>
               {% if cover.image %}
+              <a href={{cover.image}}>
                 <img src="{{ cover.image }}" alt="{{ cover.description}} " style="max-width: 300px;">
+                </a>
               {% endif %}
               <p>{{ cover.description|default:"" }}</p>
             </ul>
@@ -515,7 +517,9 @@ body {
           {% for adstrailer in product.product_paratext.paratext_adstrailer.all %}
             <ul>
               {% if adstrailer.image %}
+              <a href={{adstrailer.image}}>
                 <img src="{{ adstrailer.image }}" alt="{{ adstrailer.description}} " style="max-width: 300px;">
+              </a>
               {% endif %}
               <p>{{ adstrailer.description|default:"" }}</p>
               {% if adstrailer.videoclip %}
@@ -532,7 +536,9 @@ body {
           {% for extra in product.product_paratext.paratext_extras.all %}
             <ul>
               {% if extra.image %}
+              <a href={{extra.image}}>
                 <img src="{{ extra.image }}" alt="{{ extra.description}} " style="max-width: 300px;">
+                </a>
               {% endif %}
               <p>{{ extra.description|default:"" }}</p>
               {% if extra.videoclip %}
@@ -549,7 +555,9 @@ body {
           {% for rulebook in product.product_paratext.paratext_rulebook.all %}
             <ul>
               {% if rulebook.image %}
+              <a href={{rulebook.image}}>
                 <img src="{{ rulebook.image }}" alt="{{ rulebook.description}} " style="max-width: 300px;">
+                </a>
               {% endif %}
               <p>{{ rulebook.description|default:"" }}</p>
             </ul>
@@ -562,7 +570,9 @@ body {
           {% for videoclip in product.product_paratext.paratext_videoclip.all %}
             <ul>
               {% if videoclip.image %}
+              <a href={{videoclip.image}}>
                 <img src="{{ videoclip.image }}" alt="{{ videoclip.description}} " style="max-width: 300px;">
+                </a>
               {% endif %}
               <p>{{ videoclip.description|default:"" }}</p>
               {% if videoclip.videoclip %}
