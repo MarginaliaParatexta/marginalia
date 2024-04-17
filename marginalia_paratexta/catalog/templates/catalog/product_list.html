@@ -88,8 +88,6 @@
       border-bottom: none;
     }
 
-
-
     .filtered-products a {
       color: #007bff;
       text-decoration: none;
@@ -102,6 +100,10 @@
 
   <div class="filter-form">
     <form method="get" action="{% url 'creations' %}">
+
+      <label for="id_text_search">Búsqueda general</label>
+      {{ filter.form.text_search }}
+      
       <label for="id_title">Título</label>
       {{ filter.form.title }}
       
@@ -112,18 +114,14 @@
       <label for="id_genero">Género</label>
       {{ filter.form.genero }}
 
-      <label for="id_paises">Países Relacionados</label>
+      <label for="id_paises">País</label>
       {{ filter.form.paises }}
 
-      <label for="id_creation_type">Tipo de Creación</label>
+      <label for="id_creation_type">Formatos</label>
       {{ filter.form.creation_type }}
 
       <label for="id_publication_year_range_0">Rango de años de publicación</label>
       {{ filter.form.publication_year_range }}
-
-      <label for="id_text_search">Buscar en todos los campos</label>
-      {{ filter.form.text_search }}
-
 
       <div class="button-group">
         <button type="submit" class="btn-filter">Filtrar</button>
@@ -133,7 +131,7 @@
   </div>
 
   <div class="filtered-products">
-    <h4>Productos que cumplen todas las condiciones:</h4>
+    <h4>Creaciones que cumplen todas las condiciones:</h4>
     <ul>
       {% for product in all_conditions %}
         <li><a href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
@@ -143,7 +141,7 @@
     </ul>
 
     {% if any_condition %}
-      <h4>Productos que cumplen al menos una de las condiciones de género y palabra clave:</h4>
+      <h4>Creaciones que cumplen una o más condiciones:</h4>
       <ul>
         {% for product in any_condition %}
           <li><a class="item" href="{% url 'creation-detail' pk=product.id %}">{{ product.title }}</a></li>
