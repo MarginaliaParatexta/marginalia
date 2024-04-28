@@ -196,7 +196,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(Movie)
 class MovieAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):   
         form = super(MovieAdmin, self).get_form(request, obj, **kwargs)
         return form
     list_display = ('original_title', 'authorship')
@@ -204,28 +204,28 @@ class MovieAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
 
 @admin.register(Musica)
 class MusicAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):   
         form = super(MusicAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline]
 
 @admin.register(TVSerie)
 class TVSerieAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):    
         form = super(TVSerieAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, OtherCountriesDebutInline]
 
 @admin.register(Videogame)
 class VideogameAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):   
         form = super(VideogameAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, OtherCountriesDebutInline]
 
 @admin.register(Theatre)
 class TheatreAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):    
         form = super(TheatreAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, StagingInline, ImageInline]
@@ -233,21 +233,21 @@ class TheatreAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
 
 @admin.register(Novel)
 class NovelAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):   
         form = super(NovelAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, OtherLanguageEditionInline, ReissueInline]
 
 @admin.register(Comic)
 class ComicAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):    
         form = super(ComicAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, OtherLanguageEditionInline, ReissueInline]
 
 @admin.register(BoardGame)
 class BoardGameAdmin(HiddenModelAdmin, DisableAddButtonModelAdmin):
-    def get_form(self, request, obj=None, **kwargs):    # Just added this override
+    def get_form(self, request, obj=None, **kwargs):    
         form = super(BoardGameAdmin, self).get_form(request, obj, **kwargs)
         return form
     inlines = [AwardInline, OtherLanguageTitleInline, OtherLanguageEditionInline, ReissueInline]
@@ -258,9 +258,9 @@ class ParatextAdmin(DisableAddButtonModelAdmin):
     readonly_fields = ('product',)
     inlines = [RulebookInline, CoverInline, VideoclipsInline, AdsTrailersInline, ExtrasInline]
     def get_product_title(self, obj):
-        return obj.product.title  # Obtiene el título del producto asociado a la creación
+        return obj.product.title 
 
-    get_product_title.short_description = 'Título del producto'  # Establece el nombre de la columna en el list_display
+    get_product_title.short_description = 'Título del producto' 
 
 @admin.register(Hipotext)
 class HipotextAdmin(DisableAddButtonModelAdmin):
@@ -299,11 +299,11 @@ class BibliographyAdmin(DisableAddButtonModelAdmin):
     readonly_fields = ('product','zotero_link', 'refworks_link')
 
     def zotero_link(self, obj):
-        zotero_url = "https://www.zotero.org/"  # Reemplaza con la URL de Zotero que desees
+        zotero_url = "https://www.zotero.org/" 
         return format_html('<a href="{}" target="_blank">Zotero</a>', zotero_url)
 
     def refworks_link(self, obj):
-        refworks_url = "https://refworks.proquest.com/"  # Reemplaza con la URL de RefWorks que desees
+        refworks_url = "https://refworks.proquest.com/" 
         return format_html('<a href="{}" target="_blank">RefWorks</a>', refworks_url)
 
 @admin.register(Product)
@@ -408,7 +408,6 @@ class AwardYearFilter(admin.SimpleListFilter):
     parameter_name = 'year_range'
 
     def lookups(self, request, model_admin):
-        # Define los rangos de años
         year_ranges = [
             ('1930-1940', '1930-1940'),
             ('1940-1950', '1940-1950'),
@@ -420,13 +419,11 @@ class AwardYearFilter(admin.SimpleListFilter):
             ('2000-2010', '2000-2010'),
             ('2010-2020', '2010-2020'),
             ('2020-2030', '2020-2030'),
-            # Agrega más rangos según sea necesario
         ]
         return year_ranges
 
     def queryset(self, request, queryset):
         if self.value():
-            # Divide el valor del filtro en el rango de años
             start_year, end_year = self.value().split('-')
             return queryset.filter(year__range=[start_year, end_year])
         return queryset
