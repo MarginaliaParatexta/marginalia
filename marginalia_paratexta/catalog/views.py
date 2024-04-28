@@ -24,30 +24,24 @@ class SignUpView(View):
     def post(self, request):
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # Procesar el formulario y realizar el registro
-            # Ejemplo: Guardar el usuario en la base de datos
             user = form.save()
             
-            # Puedes agregar acciones adicionales aquí si es necesario, como enviar un correo de confirmación
             
-            return redirect('login')  # Redirigir al inicio de sesión después del registro
+            return redirect('login')  
         else:
-            error_messages = form.errors.values()  # Obtener todos los mensajes de error
+            error_messages = form.errors.values()  
             for message in error_messages:
                 messages.error(request, message)
             return render(request, 'registration/signup.html', {'form': form})
 
 def index(request):
     """View function for home page of site."""
-
-    # Generate counts of some of the main objects
     num_products = Product.objects.all().count()
 
     context = {
         'num_products': num_products,
     }
 
-    # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
 class ProductListView( generic.ListView):
@@ -322,12 +316,10 @@ def grafico_barras_view(request):
     year_range_str = request.GET.get('year_range', '10')
     query = request.GET.get('query')
     anos = range(1930, 2031, 10)
-    # Convertir los valores a enteros
     anio_inicio = int(anio_inicio_str)
     anio_fin = int(anio_fin_str)
     titulo, creaciones = get_creaciones(request, query, generos, formatos, paises, keyWords)
-    # Lógica para generar el gráfico de barras
-    # Por ejemplo, contar el número de creaciones por década
+
     decadas = range(anio_inicio, anio_fin, year_range)
 
     if (year_range == 5):
@@ -335,17 +327,14 @@ def grafico_barras_view(request):
     else:
         num_creaciones_por_decada = [creaciones.filter(publication_year__range=(decada, decada + 9)).count() for decada in decadas]
     
-    # Crear el gráfico de barras
     data = {
         'labels': list(decadas),
         'values': num_creaciones_por_decada
     }
     rango_anos = [10, 5]
-    # Lista de géneros para mostrar en el formulario de filtrado
     lista_paises = Creation.objects.values_list('paises__name', flat=True).distinct().exclude(paises__name=None).order_by('paises__name')
     lista_de_generos = Creation.objects.values_list('genero__name', flat=True).distinct().exclude(genero__name=None).order_by('genero__name')
     lista_de_palabras_clave = Creation.objects.values_list('palabras_clave__name', flat=True).distinct().exclude(palabras_clave__name=None).order_by('palabras_clave__name')
-    # Retorna el contexto con los datos del gráfico y la lista de géneros
     return render(request, 'catalog/graph.html', { 'data':json.dumps(data), 'titulo': titulo, 'lista_de_generos': lista_de_generos, 'anos': anos, 
     'rango_anos': rango_anos, 'palabras_clave': lista_de_palabras_clave, 'paises': lista_paises, 'year_range': json.dumps(year_range),
     'formatos_seleccionados': json.dumps(formatos), 'paises_seleccionados': json.dumps(paises), 'keywords_seleccionados': json.dumps(keyWords), 
@@ -725,7 +714,6 @@ def word_cloud(request):
     lista_paises = Creation.objects.values_list('paises__name', flat=True).distinct().exclude(paises__name=None).order_by('paises__name')
     lista_de_generos = Creation.objects.values_list('genero__name', flat=True).distinct().exclude(genero__name=None).order_by('genero__name')
     anos = range(1930, 2031, 10)
-    # Pasar el wordcloud como una cadena base64 al contexto de renderización
     context = {'wordcloud_image': img_str, 'lista_de_generos': lista_de_generos, 'anos': anos, 'paises': lista_paises}
 
     return render(request, 'catalog/wordcloud.html', context)
